@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biker.Common", "Biker.Common\Biker.Common.csproj", "{D977B294-1807-44EE-854B-C9669C4406CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biker.Web", "Biker.Web\Biker.Web.csproj", "{F94B15C5-A88C-4FF7-A811-23FB25696C15}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D977B294-1807-44EE-854B-C9669C4406CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D977B294-1807-44EE-854B-C9669C4406CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D977B294-1807-44EE-854B-C9669C4406CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D977B294-1807-44EE-854B-C9669C4406CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F94B15C5-A88C-4FF7-A811-23FB25696C15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F94B15C5-A88C-4FF7-A811-23FB25696C15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F94B15C5-A88C-4FF7-A811-23FB25696C15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F94B15C5-A88C-4FF7-A811-23FB25696C15}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58A42CFC-D677-45AC-96A1-D0DADFD0E2D6}
+	EndGlobalSection
+EndGlobal
