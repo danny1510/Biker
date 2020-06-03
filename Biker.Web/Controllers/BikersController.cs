@@ -1,31 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Biker.Web.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MyVet.Web.Data.Entities;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Biker.Web.Data;
-using Biker.Web.Data.Entities;
 
-namespace Biker.Web.Controllers.MotorBike
+namespace Biker.Web.Controllers
 {
-    public class BikeTypesController : Controller
+    public class BikersController : Controller
     {
         private readonly DataContext _context;
 
-        public BikeTypesController(DataContext context)
+        public BikersController(DataContext context)
         {
             _context = context;
         }
 
-        // GET: BikeTypes
+        // GET: BikerEntities
         public async Task<IActionResult> Index()
         {
-            return View(await _context.BikeTypes.ToListAsync());
+            return View(await _context.Bikers.ToListAsync());
         }
 
-        // GET: BikeTypes/Details/5
+        // GET: BikerEntities/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +30,39 @@ namespace Biker.Web.Controllers.MotorBike
                 return NotFound();
             }
 
-            var bikeTypeEntity = await _context.BikeTypes
+            var bikerEntity = await _context.Bikers
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (bikeTypeEntity == null)
+            if (bikerEntity == null)
             {
                 return NotFound();
             }
 
-            return View(bikeTypeEntity);
+            return View(bikerEntity);
         }
 
-        // GET: BikeTypes/Create
+        // GET: BikerEntities/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: BikeTypes/Create
+        // POST: BikerEntities/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] BikeTypeEntity bikeTypeEntity)
+        public async Task<IActionResult> Create([Bind("Id")] BikerEntity bikerEntity)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(bikeTypeEntity);
+                _context.Add(bikerEntity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(bikeTypeEntity);
+            return View(bikerEntity);
         }
 
-        // GET: BikeTypes/Edit/5
+        // GET: BikerEntities/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +70,22 @@ namespace Biker.Web.Controllers.MotorBike
                 return NotFound();
             }
 
-            var bikeTypeEntity = await _context.BikeTypes.FindAsync(id);
-            if (bikeTypeEntity == null)
+            var bikerEntity = await _context.Bikers.FindAsync(id);
+            if (bikerEntity == null)
             {
                 return NotFound();
             }
-            return View(bikeTypeEntity);
+            return View(bikerEntity);
         }
 
-        // POST: BikeTypes/Edit/5
+        // POST: BikerEntities/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] BikeTypeEntity bikeTypeEntity)
+        public async Task<IActionResult> Edit(int id, [Bind("Id")] BikerEntity bikerEntity)
         {
-            if (id != bikeTypeEntity.Id)
+            if (id != bikerEntity.Id)
             {
                 return NotFound();
             }
@@ -97,12 +94,12 @@ namespace Biker.Web.Controllers.MotorBike
             {
                 try
                 {
-                    _context.Update(bikeTypeEntity);
+                    _context.Update(bikerEntity);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BikeTypeEntityExists(bikeTypeEntity.Id))
+                    if (!BikerEntityExists(bikerEntity.Id))
                     {
                         return NotFound();
                     }
@@ -113,10 +110,10 @@ namespace Biker.Web.Controllers.MotorBike
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(bikeTypeEntity);
+            return View(bikerEntity);
         }
 
-        // GET: BikeTypes/Delete/5
+        // GET: BikerEntities/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,30 +121,30 @@ namespace Biker.Web.Controllers.MotorBike
                 return NotFound();
             }
 
-            var bikeTypeEntity = await _context.BikeTypes
+            var bikerEntity = await _context.Bikers
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (bikeTypeEntity == null)
+            if (bikerEntity == null)
             {
                 return NotFound();
             }
 
-            return View(bikeTypeEntity);
+            return View(bikerEntity);
         }
 
-        // POST: BikeTypes/Delete/5
+        // POST: BikerEntities/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var bikeTypeEntity = await _context.BikeTypes.FindAsync(id);
-            _context.BikeTypes.Remove(bikeTypeEntity);
+            var bikerEntity = await _context.Bikers.FindAsync(id);
+            _context.Bikers.Remove(bikerEntity);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BikeTypeEntityExists(int id)
+        private bool BikerEntityExists(int id)
         {
-            return _context.BikeTypes.Any(e => e.Id == id);
+            return _context.Bikers.Any(e => e.Id == id);
         }
     }
 }

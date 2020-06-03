@@ -1,9 +1,6 @@
-﻿
-using Biker.Web.Data.Entities;
-
-namespace MyVet.Web.Data.Entities
+﻿namespace Biker.Web.Data.Entities
 {
-    public class BikerEntity 
+    public class ManagerEntity
     {
         public int Id { get; set; }
 
