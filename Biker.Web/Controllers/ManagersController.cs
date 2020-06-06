@@ -1,28 +1,35 @@
 ﻿using Biker.Web.Data;
 using Biker.Web.Data.Entities;
+using Biker.Web.Data.Entities.Biker;
+using Biker.Web.Helpers;
+using Biker.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Biker.Web.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ManagersController : Controller
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
 
-        public ManagersController(DataContext context)
+        public ManagersController(DataContext context,IUserHelper userHelper)
         {
             _context = context;
+            _userHelper = userHelper;
         }
 
-        // GET: Managers
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Managers.ToListAsync());
+            return View(_context.Managers.Include(m=>m.UserEntity));
         }
 
-        // GET: Managers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -40,29 +47,61 @@ namespace Biker.Web.Controllers
             return View(managerEntity);
         }
 
-        // GET: Managers/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Managers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id")] ManagerEntity managerEntity)
+        public async Task<IActionResult> Create(AddUserViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(managerEntity);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var user = new UserEntity
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Address = model.Address,
+                    Email = model.Username,
+                    UserName = model.Username,
+                    PhoneNumber = model.PhoneNumber
+                };
+
+               var response = await _userHelper.AddUserAsync(user, model.Password);
+
+                if (response.Succeeded)
+                {
+                    var userinDB = await _userHelper.GetUserByEmailAsync(model.Username);
+                    await _userHelper.AddUserToRoleAsync(userinDB, "Admin");
+
+                    var admin = new ManagerEntity
+                    {
+                        UserEntity = userinDB
+                    };
+
+                    _context.Managers.Add(admin);
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError(string.Empty, ex.Message);
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+
+
             }
-            return View(managerEntity);
+            return View(model);
         }
 
-        // GET: Managers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,9 +117,6 @@ namespace Biker.Web.Controllers
             return View(managerEntity);
         }
 
-        // POST: Managers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id")] ManagerEntity managerEntity)
@@ -113,7 +149,6 @@ namespace Biker.Web.Controllers
             return View(managerEntity);
         }
 
-        // GET: Managers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -131,7 +166,6 @@ namespace Biker.Web.Controllers
             return View(managerEntity);
         }
 
-        // POST: Managers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

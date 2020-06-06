@@ -30,16 +30,44 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Bikers" asp-action="Index">Bikers</a></li>
-                    <li><a asp-area="" asp-controller="Managers" asp-action="Index">Managers</a></li>
-                    <li><a asp-area="" asp-controller="BikeMakers" asp-action="Index">Makers</a></li>
-                    <li><a asp-area="" asp-controller="BikeTypes" asp-action="Index">MotorBike Type</a></li>
+
+
+                    @if (!User.Identity.IsAuthenticated || User.Identity.IsAuthenticated && User.IsInRole("Customer"))
+                    {
+                        <li><a asp-area="" asp-controller="Home" asp-action="Index">Inicio</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="About">Quienes somos</a></li>
+                        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contactenos</a></li>
+
+                    }
+
+
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <li><a asp-area="" asp-controller="Bikers" asp-action="Index">Bikers</a></li>
+                        <li><a asp-area="" asp-controller="Managers" asp-action="Index">Managers</a></li>
+                        <li><a asp-area="" asp-controller="BikeMakers" asp-action="Index">Makers</a></li>
+                        <li><a asp-area="" asp-controller="BikeTypes" asp-action="Index">Bike Types</a></li>
+                        <li><a asp-area="" asp-controller="MotorBikes" asp-action="Index">MotorBikes</a></li>
+
+                            }
 
                 </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a asp-area="" asp-controller="Account" asp-action="ChangeUser">@User.Identity.Name</a></li>
+                        <li><a asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
+                    }
+                </ul>
+
+
+
+
             </div>
         </div>
     </nav>

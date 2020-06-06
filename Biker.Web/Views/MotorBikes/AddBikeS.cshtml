@@ -1,0 +1,47 @@
+﻿@model Biker.Web.Models.MotorBike.AddMotorBikeSpareViewModel
+
+@{
+    ViewData["Title"] = "Create Motobike for Spare";
+}
+
+    <h2>Create Motobike for Spare</h2>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddBikeS" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MotorbikeId" />
+            <input type="hidden" asp-for="MotorBike" />
+
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" placeholder="Select a image" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="YearSince" class="control-label"></label>
+                <input asp-for="YearSince" class="form-control" />
+                <span asp-validation-for="YearSince" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="YearUntil" class="control-label"></label>
+                <input asp-for="YearUntil" class="form-control" />
+                <span asp-validation-for="YearUntil" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <input type="submit" value="AddBikeS" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-default">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

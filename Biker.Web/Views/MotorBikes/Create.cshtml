@@ -1,0 +1,113 @@
+﻿@model Biker.Web.Models.MotorBike.AddMotorBikeViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create Motorbike</h2>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<input type="hidden" asp-for="MakerId" />
+        <input type="hidden" asp-for="TypeId" />*@
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Cylinder" class="control-label"></label>
+                <input asp-for="Cylinder" class="form-control" />
+                <span asp-validation-for="Cylinder" class="text-danger"></span>
+            </div>
+
+            @*<div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>*@
+
+            <div class="form-group">
+                <label asp-for="MakerId" class="control-label"></label>
+                <select asp-for="MakerId" asp-items="Model.Makers" class="form-control"></select>
+                <span asp-validation-for="MakerId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TypeId" class="control-label"></label>
+                <select asp-for="TypeId" asp-items="Model.Types" class="form-control"></select>
+                <span asp-validation-for="TypeId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    <input asp-for="Millimeters" type="checkbox" class="form-check-input" />
+                    <label asp-for="Millimeters" class="form-check-label">¿Millimeters?</label>
+
+                </div>
+                <span asp-validation-for="Millimeters" class="text-warning"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="WidthTireF" class="control-label"></label>
+                <input asp-for="WidthTireF" class="form-control" />
+                <span asp-validation-for="WidthTireF" class="text-danger"></span>      
+            </div>
+
+            <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+
+            @if (Model.Millimeters)
+            {
+                <div class="form-group">
+                    <label asp-for="HeightTireF" class="control-label"></label>
+                    <input asp-for="HeightTireF" class="form-control" />
+                    <span asp-validation-for="HeightTireF" class="text-danger"></span>
+                </div>
+            }
+
+
+            <div class="form-group">
+                <label asp-for="FrontTire" class="control-label"></label>
+                <input asp-for="FrontTire" class="form-control" />
+                <span asp-validation-for="FrontTire" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="WidthTireR" class="control-label"></label>
+                <input asp-for="WidthTireR" class="form-control" />
+                <span asp-validation-for="WidthTireR" class="text-danger"></span>
+            </div>
+
+            @if (Model.Millimeters)
+            {
+                <div class="form-group">
+                    <label asp-for="HeightTireR" class="control-label"></label>
+                    <input asp-for="HeightTireR" class="form-control" />
+                    <span asp-validation-for="HeightTireR" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="RearTire" class="control-label"></label>
+                <input asp-for="RearTire" class="form-control" />
+                <span asp-validation-for="RearTire" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-default">Back</a>
+                <input type="submit" value="Create" class="btn btn-primary" />
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

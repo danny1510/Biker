@@ -4,31 +4,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Biker.Web.Migrations
 {
-    public partial class addusers : Migration
+    public partial class initialdb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Address",
-                table: "Bikers");
-
-            migrationBuilder.DropColumn(
-                name: "CellPhone",
-                table: "Bikers");
-
-            migrationBuilder.DropColumn(
-                name: "FirstName",
-                table: "Bikers");
-
-            migrationBuilder.DropColumn(
-                name: "LastName",
-                table: "Bikers");
-
-            migrationBuilder.AddColumn<string>(
-                name: "UserEntityId",
-                table: "Bikers",
-                nullable: true);
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -69,6 +48,33 @@ namespace Biker.Web.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BikeMakers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BikeMakers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BikeTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BikeTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,6 +184,25 @@ namespace Biker.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bikers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UserEntityId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bikers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bikers_AspNetUsers_UserEntityId",
+                        column: x => x.UserEntityId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Managers",
                 columns: table => new
                 {
@@ -196,10 +221,115 @@ namespace Biker.Web.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Bikers_UserEntityId",
-                table: "Bikers",
-                column: "UserEntityId");
+            migrationBuilder.CreateTable(
+                name: "MotorBikes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    Cylinder = table.Column<int>(nullable: false),
+                    Millimeters = table.Column<bool>(nullable: false),
+                    FrontTire = table.Column<int>(maxLength: 5, nullable: false),
+                    RearTire = table.Column<int>(maxLength: 5, nullable: false),
+                    WidthTireF = table.Column<int>(maxLength: 5, nullable: false),
+                    WidthTireR = table.Column<int>(maxLength: 5, nullable: false),
+                    HeightTireF = table.Column<int>(maxLength: 50, nullable: false),
+                    HeightTireR = table.Column<int>(maxLength: 50, nullable: false),
+                    BikeMakerId = table.Column<int>(nullable: true),
+                    BikeTypeId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MotorBikes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MotorBikes_BikeMakers_BikeMakerId",
+                        column: x => x.BikeMakerId,
+                        principalTable: "BikeMakers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MotorBikes_BikeTypes_BikeTypeId",
+                        column: x => x.BikeTypeId,
+                        principalTable: "BikeTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TypeMakers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ImageUrl = table.Column<string>(nullable: true),
+                    MakerId = table.Column<int>(nullable: true),
+                    MotorbikeTypeId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TypeMakers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TypeMakers_BikeMakers_MakerId",
+                        column: x => x.MakerId,
+                        principalTable: "BikeMakers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TypeMakers_BikeTypes_MotorbikeTypeId",
+                        column: x => x.MotorbikeTypeId,
+                        principalTable: "BikeTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MotorBikeSpares",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    YearSince = table.Column<int>(nullable: false),
+                    YearUntil = table.Column<int>(nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true),
+                    MotorBikeId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MotorBikeSpares", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MotorBikeSpares_MotorBikes_MotorBikeId",
+                        column: x => x.MotorBikeId,
+                        principalTable: "MotorBikes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BikerMotors",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BikerId = table.Column<int>(nullable: true),
+                    MotorBikeSpareId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BikerMotors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BikerMotors_Bikers_BikerId",
+                        column: x => x.BikerId,
+                        principalTable: "Bikers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BikerMotors_MotorBikeSpares_MotorBikeSpareId",
+                        column: x => x.MotorBikeSpareId,
+                        principalTable: "MotorBikeSpares",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -241,25 +371,53 @@ namespace Biker.Web.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BikerMotors_BikerId",
+                table: "BikerMotors",
+                column: "BikerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BikerMotors_MotorBikeSpareId",
+                table: "BikerMotors",
+                column: "MotorBikeSpareId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bikers_UserEntityId",
+                table: "Bikers",
+                column: "UserEntityId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Managers_UserEntityId",
                 table: "Managers",
                 column: "UserEntityId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Bikers_AspNetUsers_UserEntityId",
-                table: "Bikers",
-                column: "UserEntityId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+            migrationBuilder.CreateIndex(
+                name: "IX_MotorBikes_BikeMakerId",
+                table: "MotorBikes",
+                column: "BikeMakerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MotorBikes_BikeTypeId",
+                table: "MotorBikes",
+                column: "BikeTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MotorBikeSpares_MotorBikeId",
+                table: "MotorBikeSpares",
+                column: "MotorBikeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TypeMakers_MakerId",
+                table: "TypeMakers",
+                column: "MakerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TypeMakers_MotorbikeTypeId",
+                table: "TypeMakers",
+                column: "MotorbikeTypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Bikers_AspNetUsers_UserEntityId",
-                table: "Bikers");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -276,47 +434,34 @@ namespace Biker.Web.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BikerMotors");
+
+            migrationBuilder.DropTable(
                 name: "Managers");
+
+            migrationBuilder.DropTable(
+                name: "TypeMakers");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Bikers");
+
+            migrationBuilder.DropTable(
+                name: "MotorBikeSpares");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Bikers_UserEntityId",
-                table: "Bikers");
+            migrationBuilder.DropTable(
+                name: "MotorBikes");
 
-            migrationBuilder.DropColumn(
-                name: "UserEntityId",
-                table: "Bikers");
+            migrationBuilder.DropTable(
+                name: "BikeMakers");
 
-            migrationBuilder.AddColumn<string>(
-                name: "Address",
-                table: "Bikers",
-                maxLength: 100,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "CellPhone",
-                table: "Bikers",
-                maxLength: 20,
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "FirstName",
-                table: "Bikers",
-                maxLength: 50,
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<string>(
-                name: "LastName",
-                table: "Bikers",
-                maxLength: 50,
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.DropTable(
+                name: "BikeTypes");
         }
     }
 }

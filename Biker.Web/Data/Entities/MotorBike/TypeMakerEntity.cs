@@ -9,7 +9,7 @@ namespace Biker.Web.Data.Entities
         //Marcatipo --> maneja las imagenes de los tipos para cada marca
         public int Id { get; set; }
 
-        [Display(Name = "Image")]
+        [Display(Name = "IMAGE")]
         public string ImageUrl { get; set; }
 
         //TODO:definir ruta

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Biker.Web.Data;
 using Biker.Web.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Biker.Web.Controllers.MotorBike
 {
+    [Authorize(Roles = "Admin")]
     public class BikeTypesController : Controller
     {
         private readonly DataContext _context;

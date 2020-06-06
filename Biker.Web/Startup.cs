@@ -50,7 +50,9 @@ namespace Biker.Web
             //.AddSingletonLo instancia una vez uy lo mantiene en memoria
             //AddScoped Crea una nueva instancia cada que lo llamen
             services.AddTransient<SeedDb>();
-            services.AddScoped<IUserHelper, UserHelper>();       
+            services.AddScoped<IUserHelper, UserHelper>();
+            services.AddScoped<ICombosHelper, CombosHelper>();
+            services.AddScoped<IConverterHelper, ConverterHelper>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

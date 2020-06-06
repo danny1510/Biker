@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Biker.Web.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200603182221_addusers")]
-    partial class addusers
+    [Migration("20200605051021_initialdb")]
+    partial class initialdb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,6 +36,40 @@ namespace Biker.Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BikeMakers");
+                });
+
+            modelBuilder.Entity("Biker.Web.Data.Entities.Biker.BikerEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("UserEntityId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserEntityId");
+
+                    b.ToTable("Bikers");
+                });
+
+            modelBuilder.Entity("Biker.Web.Data.Entities.Biker.BikerMotorEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("BikerId");
+
+                    b.Property<int?>("MotorBikeSpareId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BikerId");
+
+                    b.HasIndex("MotorBikeSpareId");
+
+                    b.ToTable("BikerMotors");
                 });
 
             modelBuilder.Entity("Biker.Web.Data.Entities.BikeTypeEntity", b =>
@@ -68,32 +102,28 @@ namespace Biker.Web.Migrations
                     b.ToTable("Managers");
                 });
 
-            modelBuilder.Entity("Biker.Web.Data.Entities.MotorbikeEntity", b =>
+            modelBuilder.Entity("Biker.Web.Data.Entities.MotorBike.MotorBikeEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("BikeMakerId");
+
+                    b.Property<int?>("BikeTypeId");
+
+                    b.Property<int>("Cylinder");
+
                     b.Property<int>("FrontTire")
                         .HasMaxLength(5);
 
-                    b.Property<string>("ImageUrl");
-
-                    b.Property<int?>("MakerId");
-
-                    b.Property<int>("MaxWidthTireF")
-                        .HasMaxLength(5);
-
-                    b.Property<int>("MaxWidthTireR")
+                    b.Property<int>("HeightTireF")
                         .HasMaxLength(50);
 
-                    b.Property<int>("MinWidthTireF")
+                    b.Property<int>("HeightTireR")
                         .HasMaxLength(50);
 
-                    b.Property<int>("MinWidthTireR")
-                        .HasMaxLength(50);
-
-                    b.Property<int?>("MotorbikeTypeId");
+                    b.Property<bool>("Millimeters");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -102,17 +132,40 @@ namespace Biker.Web.Migrations
                     b.Property<int>("RearTire")
                         .HasMaxLength(5);
 
-                    b.Property<DateTime>("YearSince");
+                    b.Property<int>("WidthTireF")
+                        .HasMaxLength(5);
 
-                    b.Property<DateTime>("YearUntil");
+                    b.Property<int>("WidthTireR")
+                        .HasMaxLength(5);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MakerId");
+                    b.HasIndex("BikeMakerId");
 
-                    b.HasIndex("MotorbikeTypeId");
+                    b.HasIndex("BikeTypeId");
 
-                    b.ToTable("Motorbikes");
+                    b.ToTable("MotorBikes");
+                });
+
+            modelBuilder.Entity("Biker.Web.Data.Entities.MotorBikeSpareEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ImageUrl");
+
+                    b.Property<int?>("MotorBikeId");
+
+                    b.Property<int>("YearSince");
+
+                    b.Property<int>("YearUntil");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MotorBikeId");
+
+                    b.ToTable("MotorBikeSpares");
                 });
 
             modelBuilder.Entity("Biker.Web.Data.Entities.TypeMakerEntity", b =>
@@ -308,19 +361,22 @@ namespace Biker.Web.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("MyVet.Web.Data.Entities.BikerEntity", b =>
+            modelBuilder.Entity("Biker.Web.Data.Entities.Biker.BikerEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.HasOne("Biker.Web.Data.Entities.UserEntity", "UserEntity")
+                        .WithMany()
+                        .HasForeignKey("UserEntityId");
+                });
 
-                    b.Property<string>("UserEntityId");
+            modelBuilder.Entity("Biker.Web.Data.Entities.Biker.BikerMotorEntity", b =>
+                {
+                    b.HasOne("Biker.Web.Data.Entities.Biker.BikerEntity", "Biker")
+                        .WithMany("BikerMotors")
+                        .HasForeignKey("BikerId");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserEntityId");
-
-                    b.ToTable("Bikers");
+                    b.HasOne("Biker.Web.Data.Entities.MotorBikeSpareEntity", "MotorBikeSpare")
+                        .WithMany("BikerMotors")
+                        .HasForeignKey("MotorBikeSpareId");
                 });
 
             modelBuilder.Entity("Biker.Web.Data.Entities.ManagerEntity", b =>
@@ -330,15 +386,22 @@ namespace Biker.Web.Migrations
                         .HasForeignKey("UserEntityId");
                 });
 
-            modelBuilder.Entity("Biker.Web.Data.Entities.MotorbikeEntity", b =>
+            modelBuilder.Entity("Biker.Web.Data.Entities.MotorBike.MotorBikeEntity", b =>
                 {
-                    b.HasOne("Biker.Web.Data.Entities.BikeMakerEntity", "Maker")
+                    b.HasOne("Biker.Web.Data.Entities.BikeMakerEntity", "BikeMaker")
                         .WithMany("Motorbikes")
-                        .HasForeignKey("MakerId");
+                        .HasForeignKey("BikeMakerId");
 
-                    b.HasOne("Biker.Web.Data.Entities.BikeTypeEntity", "MotorbikeType")
+                    b.HasOne("Biker.Web.Data.Entities.BikeTypeEntity", "BikeType")
                         .WithMany("Motorbikes")
-                        .HasForeignKey("MotorbikeTypeId");
+                        .HasForeignKey("BikeTypeId");
+                });
+
+            modelBuilder.Entity("Biker.Web.Data.Entities.MotorBikeSpareEntity", b =>
+                {
+                    b.HasOne("Biker.Web.Data.Entities.MotorBike.MotorBikeEntity", "MotorBike")
+                        .WithMany("MotorBikeSpares")
+                        .HasForeignKey("MotorBikeId");
                 });
 
             modelBuilder.Entity("Biker.Web.Data.Entities.TypeMakerEntity", b =>
@@ -395,13 +458,6 @@ namespace Biker.Web.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MyVet.Web.Data.Entities.BikerEntity", b =>
-                {
-                    b.HasOne("Biker.Web.Data.Entities.UserEntity", "UserEntity")
-                        .WithMany()
-                        .HasForeignKey("UserEntityId");
                 });
 #pragma warning restore 612, 618
         }

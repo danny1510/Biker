@@ -1,18 +1,93 @@
-﻿@model MyVet.Web.Data.Entities.BikerEntity
+﻿@model Biker.Web.Data.Entities.Biker.BikerEntity
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
+<h2>Motorbikes from biker</h2>
 
 <div>
-    <h4>BikerEntity</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserEntity.FirstName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UserEntity.LastName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UserEntity.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UserEntity.Email)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UserEntity.Address)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UserEntity.Address)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.UserEntity.PhoneNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UserEntity.PhoneNumber)
+        </dd>
+
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-default">Back to List</a>
+    <a asp-action="AddBikeToBiker" class="btn btn-primary">Add Motorbike</a>
 </div>
+
+
+@if (Model.BikerMotors.Count == 0)
+{
+    <h4>Not motorbikes added yet</h4>
+}
+else
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.BikerMotors.FirstOrDefault().MotorBikeSpare.ImageUrl)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BikerMotors.FirstOrDefault().MotorBikeSpare.YearSince)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.BikerMotors.FirstOrDefault().MotorBikeSpare.YearUntil)
+                </th>
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.BikerMotors)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MotorBikeSpare.ImageUrl)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MotorBikeSpare.YearSince)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MotorBikeSpare.YearUntil)
+                </td>
+
+                <td>
+                    @*<a asp-action="EditBikeSpare" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>*@
+                    <a asp-action="DetailsBikeSpare" class="btn btn-info" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="DeleteBikeSpare" class="btn btn-danger" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+
+}

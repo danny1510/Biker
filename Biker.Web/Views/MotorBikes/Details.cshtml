@@ -1,0 +1,139 @@
+﻿@model Biker.Web.Data.Entities.MotorBike.MotorBikeEntity
+
+@{
+    ViewData["Title"] = "Details motorbikes";
+}
+
+<h2>Motorbikes for Spare </h2>
+<div>
+
+    <hr />
+
+    <dl class="dl-horizontal ">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Cylinder)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Cylinder)
+        </dd>
+
+        @if (Model.Millimeters)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ReadNumberFrontMil)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ReadNumberFrontMil)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ReadNumberRearMil)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ReadNumberRearMil)
+            </dd>
+
+        }else
+      
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.ReadNumberFrontPul)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ReadNumberFrontPul)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ReadNumberRearPul)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ReadNumberRearPul)
+            </dd>
+        }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BikeMaker.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BikeMaker.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BikeType.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BikeType.Name)
+        </dd>
+        <dt>
+            # Motorbikes
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.MotorBikeSpares.Count)
+        </dd>
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-default">Back to List</a>
+    @*<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>*@
+    <a asp-action="AddBikeS" asp-route-id="@Model.Id" class="btn btn-primary">Add Biker for Spare</a>
+</div>
+
+@if (Model.MotorBikeSpares.Count == 0)
+{
+    <h4>Not motorbiker for spare added yet</h4>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.MotorBikeSpares.FirstOrDefault().ReadModel)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MotorBikeSpares.FirstOrDefault().ImageUrl)
+                </th>
+
+                @*<th>
+                     @Html.DisplayNameFor(model => model.ReadnNameandCillinder)
+                </th>*@
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.MotorBikeSpares)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReadModel)
+                </td>
+
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+
+                        <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:250px;height:auto;max-width: 100%; height: auto;" />
+                    }
+                </td>
+
+                @*<td>
+                     @Html.DisplayFor(modelItem => Model.ReadnNameandCillinder)
+                 </td>*@
+
+                <td>
+                    <a asp-action="EditBikeSpare" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>
+                    @*<a asp-action="DetailsBikeSpare" class="btn btn-info" asp-route-id="@item.Id">Details</a>*@
+                    <a asp-action="DeleteBikeSpare" class="btn btn-danger" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
