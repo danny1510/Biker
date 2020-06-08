@@ -7,7 +7,11 @@ namespace Biker.Web.Helpers
 {
     public interface IConverterHelper
     {
-        Task<MotorBikeEntity> ToMotorbikeasync(AddMotorBikeViewModel model);
-        Task<MotorBikeSpareEntity> ToMotorbikeSpareasync(AddMotorBikeSpareViewModel model,string path);
+        Task<MotorBikeEntity> ToMotorbikeEntityasync(AddMotorBikeViewModel model);
+        Task<MotorBikeSpareEntity> ToMotorbikeSpareEntityasync(AddMotorBikeSpareViewModel model,string path,bool Isnew);
+        AddMotorBikeViewModel ToMotorBikeViewModel(MotorBikeEntity model);
+        AddMotorBikeSpareViewModel ToMotorBikeSpareViewModel(MotorBikeSpareEntity model);
+        BikeMakerEntity ToBikeMakerEntity(AddBikeMakerViewModel model, string path);
+        AddBikeMakerViewModel ToBikeMakerViewModel(BikeMakerEntity model);
     }
 }

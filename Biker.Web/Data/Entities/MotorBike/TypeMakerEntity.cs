@@ -18,7 +18,9 @@ namespace Biker.Web.Data.Entities
            : $"https://TBD.net{ImageUrl.Substring(1)}";
 
         public BikeMakerEntity Maker { get; set; }
-        public BikeTypeEntity MotorbikeType { get; set; }
+
+        [Display(Name = "TYPE")]
+        public BikeTypeEntity Type { get; set; }
 
 
     }

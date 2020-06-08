@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\MotorBikesSpare\" />
+    <Folder Include="wwwroot\images\Makers\" />
+    <Folder Include="wwwroot\images\BikeTypes\" />
   </ItemGroup>
 
 </Project>

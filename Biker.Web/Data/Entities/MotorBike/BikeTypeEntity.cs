@@ -17,7 +17,7 @@ namespace Biker.Web.Data.Entities
 
         public ICollection<MotorBikeEntity> Motorbikes { get; set; }
 
-        public ICollection<TypeMakerEntity> TypeBrands { get; set; }
+        public ICollection<TypeMakerEntity> TypeMaker { get; set; }
 
 
 

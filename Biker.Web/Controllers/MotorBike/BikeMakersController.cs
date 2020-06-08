@@ -1,9 +1,16 @@
 ﻿using Biker.Web.Data;
 using Biker.Web.Data.Entities;
+using Biker.Web.Helpers;
+using Biker.Web.Models;
+using Biker.Web.Models.MotorBike;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Biker.Web.Controllers.MotorBike
@@ -12,28 +19,50 @@ namespace Biker.Web.Controllers.MotorBike
     public class BikeMakersController : Controller
     {
         private readonly DataContext _context;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
+        private readonly ICombosHelper _combosHelper;
 
-        public BikeMakersController(DataContext context)
+        public BikeMakersController(DataContext context,
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper,
+            ICombosHelper combosHelper)
         {
             _context = context;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
+            _combosHelper = combosHelper;
         }
 
-        // GET: BikeMakers
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string error)
         {
-            return View(await _context.BikeMakers.ToListAsync());
+            if (!string.IsNullOrEmpty(error))
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
+
+            return View(_context.BikeMakers
+                .OrderBy(m => m.Name));
+
         }
 
-        // GET: BikeMakers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string error)
         {
+            if (!string.IsNullOrEmpty(error))
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
+
             if (id == null)
             {
                 return NotFound();
             }
 
             var bikeMakerEntity = await _context.BikeMakers
+                .Include(bm => bm.TypeMaker)
+                .ThenInclude(tm=> tm.Type)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (bikeMakerEntity == null)
             {
                 return NotFound();
@@ -42,77 +71,101 @@ namespace Biker.Web.Controllers.MotorBike
             return View(bikeMakerEntity);
         }
 
-        // GET: BikeMakers/Create
         public IActionResult Create()
         {
+
             return View();
         }
 
-        // POST: BikeMakers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,ImageUrl")] BikeMakerEntity bikeMakerEntity)
+        public async Task<IActionResult> Create(AddBikeMakerViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(bikeMakerEntity);
+                var path = string.Empty;
+
+                if (model.ImageFile != null)
+                {
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "Makers");
+                }
+
+                var bikeMakerEntity = _converterHelper.ToBikeMakerEntity(model, path);
+
+                try
+                {
+                    _context.BikeMakers.Add(bikeMakerEntity);
+                }
+                catch (System.Exception err)
+                {
+                    ModelState.AddModelError(string.Empty, err.Message);
+                    return View(model);
+                }
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(bikeMakerEntity);
+            return View(model);
         }
 
         // GET: BikeMakers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+
             if (id == null)
             {
                 return NotFound();
             }
+            var model = await _context.BikeMakers.FindAsync(id);
 
-            var bikeMakerEntity = await _context.BikeMakers.FindAsync(id);
-            if (bikeMakerEntity == null)
+            if (model == null)
             {
                 return NotFound();
             }
-            return View(bikeMakerEntity);
+
+            var bikeMakerModel = _converterHelper.ToBikeMakerViewModel(model);
+
+            if (bikeMakerModel == null)
+            {
+                return NotFound();
+            }
+            return View(bikeMakerModel);
         }
 
-        // POST: BikeMakers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ImageUrl")] BikeMakerEntity bikeMakerEntity)
+        public async Task<IActionResult> Edit(int id, AddBikeMakerViewModel model)
         {
-            if (id != bikeMakerEntity.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                var path = model.ImageUrl;
+
+                if (model.ImageFile != null)
+                {
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "Makers");
+                    //TODO: investigar
+                    _imageHelper.DeleteImageAsync(model.ImageUrl);
+                }
+
+                var bikeMakerEntity = _converterHelper.ToBikeMakerEntity(model, path);
+
                 try
                 {
-                    _context.Update(bikeMakerEntity);
+                    _context.BikeMakers.Update(bikeMakerEntity);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException err)
                 {
-                    if (!BikeMakerEntityExists(bikeMakerEntity.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ModelState.AddModelError(string.Empty, err.Message);
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(bikeMakerEntity);
+            return View(model);
         }
 
         // GET: BikeMakers/Delete/5
@@ -124,29 +177,126 @@ namespace Biker.Web.Controllers.MotorBike
             }
 
             var bikeMakerEntity = await _context.BikeMakers
+                .Include(m => m.Motorbikes)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+
             if (bikeMakerEntity == null)
             {
                 return NotFound();
             }
 
-            return View(bikeMakerEntity);
-        }
+            if (bikeMakerEntity.Motorbikes.Count > 0)
+            {
 
-        // POST: BikeMakers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var bikeMakerEntity = await _context.BikeMakers.FindAsync(id);
-            _context.BikeMakers.Remove(bikeMakerEntity);
-            await _context.SaveChangesAsync();
+                var error = "The Motorbike Maker can't be deleted because it has related records.";
+                return RedirectToAction("Index", new RouteValueDictionary(new { Controller = "BikeMakers", error }));
+            }
+
+            try
+            {
+                _context.BikeMakers.Remove(bikeMakerEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException err)
+            {
+                ModelState.AddModelError(string.Empty, err.Message);
+                return RedirectToAction(nameof(Index));
+            }
+
+
             return RedirectToAction(nameof(Index));
+
+
         }
 
         private bool BikeMakerEntityExists(int id)
         {
             return _context.BikeMakers.Any(e => e.Id == id);
         }
+
+
+        public async Task<IActionResult> AddType(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var maker = await _context.BikeMakers.FindAsync(id.Value);
+            //.Include(bm => bm.Motorbikes)
+            //.Include(bm => bm.TypeMaker)
+            //.FirstOrDefaultAsync(bm => bm.Id == id.Value);
+
+            if (maker == null)
+            {
+                return NotFound();
+            }
+
+            var typeMakermodel = new TypeMakerViewModel
+            {
+                Types = _combosHelper.GetComboTypes(),
+                MakerId = maker.Id,
+                Maker = maker
+            };
+
+            return View(typeMakermodel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddType(TypeMakerViewModel model)
+        {
+
+    
+            model.Maker = await _context.BikeMakers.FindAsync(model.MakerId);
+            model.Type = await _context.BikeTypes.FindAsync(model.TypeId);
+
+            if (model.Maker == null)
+            {
+                model.Types = _combosHelper.GetComboTypes();
+                return View(model);
+            }
+
+            if (model.Type == null)
+            {
+                model.Types = _combosHelper.GetComboTypes();
+                return View(model);
+            }
+
+
+            var path = string.Empty;
+
+                if (model.ImageFile != null)
+                {
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile, "BikeTypes");
+                }
+
+                var typeMakerEntity = new TypeMakerEntity
+                {
+                    ImageUrl = path,
+                    Maker = await _context.BikeMakers.FindAsync(model.MakerId),
+                    Type = await _context.BikeTypes.FindAsync(model.TypeId)
+                };
+
+                try
+                {
+                    _context.TypeMakers.Add(typeMakerEntity);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception err)
+                {
+                    return RedirectToAction($"Details/{model.MakerId}", new RouteValueDictionary(new { Controller = "BikeMakers", err.Message }));
+                }
+
+                return RedirectToAction($"Details/{model.MakerId}");
+            
+
+            
+        }
+
+
+
+
     }
 }

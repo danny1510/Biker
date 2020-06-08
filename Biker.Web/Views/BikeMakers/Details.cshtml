@@ -1,30 +1,100 @@
 ﻿@model Biker.Web.Data.Entities.BikeMakerEntity
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = $"Motorbike Types ";
 }
 
-<h2>Details</h2>
+<h2>Motorbike Types</h2>
 
 <div>
-    <h4>BikeMakerEntity</h4>
-    <hr />
-    <dl class="dl-horizontal text-center">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.ImageUrl)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.ImageUrl)
-        </dd>
-    </dl>
+    <table class="table">
+        <tbody>
+            <tr>
+                @*<td>
+                        <h2>@Html.DisplayFor(model => model.Name) </h2>
+                    </td>*@
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:200px;height:auto;max-width: 30%; height: auto;" />
+                    }
+                </td>
+        </tbody>
+    </table>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-default">Back to List</a>
+    <a asp-action="AddType" class="btn btn-primary" asp-route-id="@Model.Id">Add Type</a>
 </div>
+
+@if (Model.TypeMaker.Count == 0)
+{
+    <h4>Not motorbike type added yet</h4>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.TypeMaker.FirstOrDefault().ImageUrl)
+
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TypeMaker.FirstOrDefault().Type)
+                </th>
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.TypeMaker)
+            {
+                <tr>
+
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+
+                            <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:180px;height:auto;max-width: 100%; height: auto;" />
+                        }
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type.Name)
+
+                    </td>
+
+                    <td>
+                        <a asp-action="EditBikeS" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>
+                        @*<a asp-action="DetailsBikeSpare" class="btn btn-info" asp-route-id="@item.Id">Details</a>*@
+                        <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog">Delete</button>
+                    </td>
+                </tr>
+            }
+
+
+
+        </tbody>
+    </table>
+}
+
+<partial name="_DeleteDialog" />
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+    	$(document).ready(function () {
+        	// Delete item
+        	var item_to_delete;
+
+        	$('.deleteItem').click((e) => {
+            	item_to_delete = e.currentTarget.dataset.id;
+        	});
+
+        	$("#btnYesDelete").click(function () {
+            	window.location.href = '/BukeMakers/DeleteType/' + item_to_delete;
+        	});
+    	});
+    </script>
+}

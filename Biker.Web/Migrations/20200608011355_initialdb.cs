@@ -230,12 +230,12 @@ namespace Biker.Web.Migrations
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     Cylinder = table.Column<int>(nullable: false),
                     Millimeters = table.Column<bool>(nullable: false),
-                    FrontTire = table.Column<int>(maxLength: 5, nullable: false),
-                    RearTire = table.Column<int>(maxLength: 5, nullable: false),
-                    WidthTireF = table.Column<int>(maxLength: 5, nullable: false),
-                    WidthTireR = table.Column<int>(maxLength: 5, nullable: false),
-                    HeightTireF = table.Column<int>(maxLength: 50, nullable: false),
-                    HeightTireR = table.Column<int>(maxLength: 50, nullable: false),
+                    FrontTire = table.Column<int>(nullable: false),
+                    RearTire = table.Column<int>(nullable: false),
+                    WidthTireF = table.Column<int>(nullable: false),
+                    WidthTireR = table.Column<int>(nullable: false),
+                    HeightTireF = table.Column<int>(nullable: false),
+                    HeightTireR = table.Column<int>(nullable: false),
                     BikeMakerId = table.Column<int>(nullable: true),
                     BikeTypeId = table.Column<int>(nullable: true)
                 },
@@ -263,8 +263,8 @@ namespace Biker.Web.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ImageUrl = table.Column<string>(nullable: true),
-                    MakerId = table.Column<int>(nullable: true),
-                    MotorbikeTypeId = table.Column<int>(nullable: true)
+                    MakerId = table.Column<int>(nullable: false),
+                    TypeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -274,13 +274,13 @@ namespace Biker.Web.Migrations
                         column: x => x.MakerId,
                         principalTable: "BikeMakers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TypeMakers_BikeTypes_MotorbikeTypeId",
-                        column: x => x.MotorbikeTypeId,
+                        name: "FK_TypeMakers_BikeTypes_TypeId",
+                        column: x => x.TypeId,
                         principalTable: "BikeTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -411,9 +411,9 @@ namespace Biker.Web.Migrations
                 column: "MakerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TypeMakers_MotorbikeTypeId",
+                name: "IX_TypeMakers_TypeId",
                 table: "TypeMakers",
-                column: "MotorbikeTypeId");
+                column: "TypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -5,6 +5,7 @@ using Biker.Web.Helpers;
 using Biker.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Biker.Web.Controllers
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
 
-        public ManagersController(DataContext context,IUserHelper userHelper)
+        public ManagersController(DataContext context, IUserHelper userHelper)
         {
             _context = context;
             _userHelper = userHelper;
@@ -27,7 +28,7 @@ namespace Biker.Web.Controllers
 
         public IActionResult Index()
         {
-            return View(_context.Managers.Include(m=>m.UserEntity));
+            return View(_context.Managers.Include(m => m.UserEntity));
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -52,7 +53,7 @@ namespace Biker.Web.Controllers
             return View();
         }
 
-      
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AddUserViewModel model)
@@ -69,7 +70,7 @@ namespace Biker.Web.Controllers
                     PhoneNumber = model.PhoneNumber
                 };
 
-               var response = await _userHelper.AddUserAsync(user, model.Password);
+                var response = await _userHelper.AddUserAsync(user, model.Password);
 
                 if (response.Succeeded)
                 {
@@ -109,44 +110,66 @@ namespace Biker.Web.Controllers
                 return NotFound();
             }
 
-            var managerEntity = await _context.Managers.FindAsync(id);
+            var managerEntity = await _context.Managers
+                .Include(b => b.UserEntity)
+                .FirstOrDefaultAsync(b => b.Id == id.Value);
+
             if (managerEntity == null)
             {
                 return NotFound();
             }
-            return View(managerEntity);
+
+            var viewModel = new EditUserViewModel
+            {
+                Id = managerEntity.Id,
+                Address = managerEntity.UserEntity.Address,
+                FirstName = managerEntity.UserEntity.FirstName,
+                LastName = managerEntity.UserEntity.LastName,
+                PhoneNumber = managerEntity.UserEntity.PhoneNumber
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id")] ManagerEntity managerEntity)
+        public async Task<IActionResult> Edit(int id, EditUserViewModel model)
         {
-            if (id != managerEntity.Id)
+            if (id != model.Id || id != model.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(managerEntity);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ManagerEntityExists(managerEntity.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                return View(model);
+            }
+
+            var managerEntity = await _context.Managers
+            .Include(m => m.UserEntity)
+            .FirstOrDefaultAsync(m => m.Id == model.Id);
+
+            if (managerEntity  == null)
+            {
+                return NotFound();
+            }
+
+            managerEntity.UserEntity.FirstName = model.FirstName;
+            managerEntity.UserEntity.LastName = model.LastName;
+            managerEntity.UserEntity.Address = model.Address;
+            managerEntity.UserEntity.PhoneNumber = model.PhoneNumber;
+
+            try
+            {
+                await _userHelper.UpdateUserAsync(managerEntity.UserEntity);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(managerEntity);
+            catch (DbUpdateConcurrencyException err)
+            {
+                return RedirectToAction("Index", new RouteValueDictionary(new { Controller = "BikeMakers", err.Message }));
+            }
+
         }
 
         public async Task<IActionResult> Delete(int? id)

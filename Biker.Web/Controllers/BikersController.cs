@@ -4,6 +4,7 @@ using Biker.Web.Data.Entities.Biker;
 using Biker.Web.Helpers;
 using Biker.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,13 @@ namespace Biker.Web.Controllers
             _userHelper = userHelper;
         }
 
-
-        public IActionResult Index()
+        public IActionResult Index(string error)
         {
+            if (!string.IsNullOrEmpty(error))
+            {
+                ModelState.AddModelError(string.Empty, error);
+            }
+
             return View(_context.Bikers
                 .Include(b => b.BikerMotors)
                 .Include(b => b.UserEntity));
@@ -108,7 +113,6 @@ namespace Biker.Web.Controllers
             return View(model);
         }
 
-
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -116,47 +120,68 @@ namespace Biker.Web.Controllers
                 return NotFound();
             }
 
-            var bikerEntity = await _context.Bikers.FindAsync(id);
+            var bikerEntity = await _context.Bikers
+                .Include(b => b.UserEntity)
+                .FirstOrDefaultAsync(b => b.Id == id.Value);
+
             if (bikerEntity == null)
             {
                 return NotFound();
             }
-            return View(bikerEntity);
-        }
 
+            var viewModel = new EditUserViewModel
+            {
+                Id = bikerEntity.Id,
+                Address = bikerEntity.UserEntity.Address,
+                FirstName = bikerEntity.UserEntity.FirstName,
+                LastName = bikerEntity.UserEntity.LastName,
+                PhoneNumber = bikerEntity.UserEntity.PhoneNumber
+            };
+
+
+            return View(viewModel);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id")] BikerEntity bikerEntity)
+        public async Task<IActionResult> Edit(int id, EditUserViewModel model)
         {
-            if (id != bikerEntity.Id)
+            if (id != model.Id || id != model.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(bikerEntity);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BikerEntityExists(bikerEntity.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                return View(model);
+            }
+
+            var bikerEntity = await _context.Bikers
+             .Include(b => b.UserEntity)
+             .FirstOrDefaultAsync(b => b.Id == model.Id);
+
+            if (bikerEntity == null)
+            {
+                return NotFound();
+            }
+
+            bikerEntity.UserEntity.FirstName = model.FirstName;
+            bikerEntity.UserEntity.LastName = model.LastName;
+            bikerEntity.UserEntity.Address = model.Address;
+            bikerEntity.UserEntity.PhoneNumber = model.PhoneNumber;
+
+            try
+            {
+                await _userHelper.UpdateUserAsync(bikerEntity.UserEntity);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(bikerEntity);
-        }
+            catch (DbUpdateConcurrencyException err)
+            {
+                return RedirectToAction("Index", new RouteValueDictionary(new { Controller = "BikeMakers", err.Message }));
+            }
 
+        }
 
         public async Task<IActionResult> Delete(int? id)
         {
@@ -166,23 +191,33 @@ namespace Biker.Web.Controllers
             }
 
             var bikerEntity = await _context.Bikers
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(b => b.UserEntity)
+                .Include(b => b.BikerMotors)
+                .FirstOrDefaultAsync(b => b.Id == id.Value);
+
             if (bikerEntity == null)
             {
                 return NotFound();
             }
 
-            return View(bikerEntity);
-        }
+            if (bikerEntity.BikerMotors.Count > 0)
+            {
+                var error = "The Biker can't be deleted because it has related records.";
+                return RedirectToAction("Index", new RouteValueDictionary(new { Controller = "BikeMakers", error }));
+            }
 
+            try
+            {
+                _context.Bikers.Remove(bikerEntity);
+                _context.Users.Remove(bikerEntity.UserEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception err)
+            {
+                return RedirectToAction("Index", new RouteValueDictionary(new { Controller = "BikeMakers", err.Message }));
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var bikerEntity = await _context.Bikers.FindAsync(id);
-            _context.Bikers.Remove(bikerEntity);
-            await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

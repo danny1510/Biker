@@ -8,16 +8,17 @@
 <hr />
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.ReadnNameandCillinder)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cylinder)
-            </th>
+            @*<th>
+                    @Html.DisplayNameFor(model => model.Cylinder)
+                </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.BikeMaker.Name)
             </th>
@@ -25,7 +26,7 @@
                 @Html.DisplayNameFor(model => model.BikeType.Name)
             </th>
             <th>
-                # Motorbikes for Spare
+                # Models
             </th>
 
             <th></th>
@@ -36,11 +37,11 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.ReadnNameandCillinder)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Cylinder)
-                </td>
+                @*<td>
+                        @Html.DisplayFor(modelItem => item.Cylinder)
+                    </td>*@
                 <td>
                     @Html.DisplayFor(modelItem => item.BikeMaker.Name)
                 </td>
@@ -53,9 +54,31 @@
                 <td>
                     <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>
                     <a asp-action="Details" class="btn btn-info" asp-route-id="@item.Id">Details</a>
-                    <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id">Delete</a>
+                    <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog">Delete</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<partial name="_DeleteDialog" />
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Delete item
+            var item_to_delete;
+
+            $('.deleteItem').click((e) => {
+                item_to_delete = e.currentTarget.dataset.id;
+            });
+
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/MotorBikes/Delete/' + item_to_delete;
+            });
+        });
+    </script>
+}
+

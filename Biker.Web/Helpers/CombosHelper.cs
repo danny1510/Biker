@@ -16,6 +16,7 @@ namespace Biker.Web.Helpers
 
         public IEnumerable<SelectListItem> GetComboTypes()
         {
+
             var list = _dataContext.BikeTypes.Select(t => new SelectListItem
             {
                 Text = t.Name,
@@ -30,7 +31,7 @@ namespace Biker.Web.Helpers
                 Value = "0"
             });
 
-            return (list);
+            return list;
 
         }
 

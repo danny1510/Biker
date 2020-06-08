@@ -22,5 +22,6 @@ namespace Biker.Web.Helpers
 
         Task LogoutAsync();
 
+        Task<IdentityResult> UpdateUserAsync(UserEntity user);
     }
 }

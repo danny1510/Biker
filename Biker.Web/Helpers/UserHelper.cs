@@ -69,6 +69,10 @@ namespace Biker.Web.Helpers
             await _signInManager.SignOutAsync();
         }
 
+        public async Task<IdentityResult> UpdateUserAsync(UserEntity user)
+        {
+            return await _userManager.UpdateAsync(user);
+        }
 
 
 

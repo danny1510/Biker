@@ -112,14 +112,11 @@ namespace Biker.Web.Migrations
 
                     b.Property<int>("Cylinder");
 
-                    b.Property<int>("FrontTire")
-                        .HasMaxLength(5);
+                    b.Property<int>("FrontTire");
 
-                    b.Property<int>("HeightTireF")
-                        .HasMaxLength(50);
+                    b.Property<int>("HeightTireF");
 
-                    b.Property<int>("HeightTireR")
-                        .HasMaxLength(50);
+                    b.Property<int>("HeightTireR");
 
                     b.Property<bool>("Millimeters");
 
@@ -127,14 +124,11 @@ namespace Biker.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(50);
 
-                    b.Property<int>("RearTire")
-                        .HasMaxLength(5);
+                    b.Property<int>("RearTire");
 
-                    b.Property<int>("WidthTireF")
-                        .HasMaxLength(5);
+                    b.Property<int>("WidthTireF");
 
-                    b.Property<int>("WidthTireR")
-                        .HasMaxLength(5);
+                    b.Property<int>("WidthTireR");
 
                     b.HasKey("Id");
 
@@ -174,15 +168,15 @@ namespace Biker.Web.Migrations
 
                     b.Property<string>("ImageUrl");
 
-                    b.Property<int?>("MakerId");
+                    b.Property<int>("MakerId");
 
-                    b.Property<int?>("MotorbikeTypeId");
+                    b.Property<int>("TypeId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MakerId");
 
-                    b.HasIndex("MotorbikeTypeId");
+                    b.HasIndex("TypeId");
 
                     b.ToTable("TypeMakers");
                 });
@@ -405,12 +399,14 @@ namespace Biker.Web.Migrations
             modelBuilder.Entity("Biker.Web.Data.Entities.TypeMakerEntity", b =>
                 {
                     b.HasOne("Biker.Web.Data.Entities.BikeMakerEntity", "Maker")
-                        .WithMany("TypeBrands")
-                        .HasForeignKey("MakerId");
+                        .WithMany("TypeMaker")
+                        .HasForeignKey("MakerId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Biker.Web.Data.Entities.BikeTypeEntity", "MotorbikeType")
+                    b.HasOne("Biker.Web.Data.Entities.BikeTypeEntity", "Type")
                         .WithMany("TypeBrands")
-                        .HasForeignKey("MotorbikeTypeId");
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

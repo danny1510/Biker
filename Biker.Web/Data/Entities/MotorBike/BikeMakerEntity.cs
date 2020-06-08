@@ -23,7 +23,7 @@ namespace Biker.Web.Data.Entities
            : $"https://TBD.net{ImageUrl.Substring(1)}";
 
         public ICollection<MotorBikeEntity>Motorbikes { get; set; }
-        public ICollection<TypeMakerEntity> TypeBrands { get; set; }
+        public ICollection<TypeMakerEntity> TypeMaker { get; set; }
 
 
 

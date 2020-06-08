@@ -1,0 +1,44 @@
+﻿@model Biker.Web.Models.TypeMakerViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Add Motorbike Type</h2>
+
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddType" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MakerId" />
+            <input type="hidden" asp-for="Maker" />
+            @*<input type="hidden" asp-for="TypeId"/>*@
+
+            <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TypeId" class="control-label"></label>
+                <select asp-for="TypeId" asp-items="Model.Types" class="form-control"></select>
+                <span asp-validation-for="TypeId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-default">Back</a>
+                <input type="submit" value="AddType" class="btn btn-primary" />
+
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
