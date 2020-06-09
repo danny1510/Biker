@@ -1,22 +1,20 @@
 ﻿@model Biker.Web.Data.Entities.BikeMakerEntity
 
 @{
-    ViewData["Title"] = $"Motorbike Types ";
+    ViewData["Title"] = "Motorbike Types ";
 }
 
-<h2>Motorbike Types</h2>
+    <h2>MOTORBIKE TYPES <b>@Html.DisplayFor(model => model.Name)</b></h2>
 
 <div>
     <table class="table">
+ 
         <tbody>
             <tr>
-                @*<td>
-                        <h2>@Html.DisplayFor(model => model.Name) </h2>
-                    </td>*@
                 <td>
                     @if (!string.IsNullOrEmpty(Model.ImageUrl))
                     {
-                        <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:200px;height:auto;max-width: 30%; height: auto;" />
+                        <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:300px;height:auto;max-width: 30%; height: auto;"  class="img-responsive img-thumbnail center-block"/>
                     }
                 </td>
         </tbody>
@@ -55,17 +53,16 @@ else
                     <td>
                         @if (!string.IsNullOrEmpty(item.ImageUrl))
                         {
-
-                            <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:180px;height:auto;max-width: 100%; height: auto;" />
+                            <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:250px;height:auto;max-width: 100%; height: auto;" />
                         }
-
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Type.Name)
-
                     </td>
 
                     <td>
-                        <a asp-action="EditBikeS" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>
+                        @Html.DisplayFor(modelItem => item.Type.Name)
+                    </td>
+
+                    <td>
+                        <a asp-action="EditType" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>
                         @*<a asp-action="DetailsBikeSpare" class="btn btn-info" asp-route-id="@item.Id">Details</a>*@
                         <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog">Delete</button>
                     </td>
@@ -84,17 +81,17 @@ else
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script type="text/javascript">
-    	$(document).ready(function () {
-        	// Delete item
-        	var item_to_delete;
+        $(document).ready(function () {
+            // Delete item
+            var item_to_delete;
 
-        	$('.deleteItem').click((e) => {
-            	item_to_delete = e.currentTarget.dataset.id;
-        	});
+            $('.deleteItem').click((e) => {
+                item_to_delete = e.currentTarget.dataset.id;
+            });
 
-        	$("#btnYesDelete").click(function () {
-            	window.location.href = '/BukeMakers/DeleteType/' + item_to_delete;
-        	});
-    	});
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/BikeMakers/DeleteType/' + item_to_delete;
+            });
+        });
     </script>
 }

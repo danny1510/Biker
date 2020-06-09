@@ -42,8 +42,9 @@ namespace Biker.Web.Controllers.MotorBike
             }
 
             return View(_context.BikeMakers
+                .Include(bm=>bm.TypeMaker)
+                .ThenInclude(tm => tm.Type)
                 .OrderBy(m => m.Name));
-
         }
 
         public async Task<IActionResult> Details(int? id, string error)
@@ -295,8 +296,129 @@ namespace Biker.Web.Controllers.MotorBike
             
         }
 
+        public async Task<IActionResult> EditType(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var typeMaker = await _context.TypeMakers
+                .Include(tm => tm.Type)
+                .Include(tm => tm.Maker)
+                .FirstAsync(tm => tm.Id == id);
+
+            if (typeMaker == null)
+            {
+                return NotFound();
+            }
+
+            var typeMakermodel = new TypeMakerViewModel
+            {
+                Id = typeMaker.Id,
+                ImageUrl = typeMaker.ImageUrl,
+                Types = _combosHelper.GetComboTypes(),
+                Type = typeMaker.Type,
+                MakerId = typeMaker.Maker.Id,
+                Maker = typeMaker.Maker,
+                TypeId = typeMaker.Type.Id
+            };
+
+            return View(typeMakermodel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditType(TypeMakerViewModel model)
+        {
+
+            model.Maker = await _context.BikeMakers.FindAsync(model.MakerId);
+            model.Type = await _context.BikeTypes.FindAsync(model.TypeId);
+
+            if (model.Maker == null)
+            {
+                model.Types = _combosHelper.GetComboTypes();
+                return View(model);
+            }
+
+            if (model.Type == null)
+            {
+                model.Types = _combosHelper.GetComboTypes();
+                return View(model);
+            }
 
 
+            var path = model.ImageUrl;
+
+            if (model.ImageFile != null)
+            {
+                path = await _imageHelper.UploadImageAsync(model.ImageFile, "BikeTypes");
+            }
+
+            var typeMakerEntity = new TypeMakerEntity
+            {
+                Id = model.Id,
+                ImageUrl = path,
+                Maker = await _context.BikeMakers.FindAsync(model.MakerId),
+                Type = await _context.BikeTypes.FindAsync(model.TypeId)
+            };
+
+            try
+            {
+                _context.TypeMakers.Update(typeMakerEntity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception err)
+            {
+                return RedirectToAction($"Details/{model.MakerId}", new RouteValueDictionary(new { Controller = "BikeMakers", err.Message }));
+            }
+
+            return RedirectToAction($"Details/{model.MakerId}");
+        }
+
+        public async Task<IActionResult> DeleteType(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var typeMaker = await _context.TypeMakers
+                .Include(tm => tm.Maker)
+                .FirstOrDefaultAsync(tm => tm.Id == id);
+                
+
+            if (typeMaker == null)
+            {
+                return NotFound();
+            }
+
+
+            //if (typeMaker..Count > 0)
+            //{
+
+            //    var error = "The Motorbike Maker can't be deleted because it has related records.";
+            //    return RedirectToAction("Index", new RouteValueDictionary(new { Controller = "BikeMakers", error }));
+            //}
+
+            try
+            {
+                _context.TypeMakers.Remove(typeMaker);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException err)
+            {
+                ModelState.AddModelError(string.Empty, err.Message);
+                   return RedirectToAction($"Details/{typeMaker.Maker.Id}", new RouteValueDictionary(new { Controller = "BikeMakers", err.Message }));
+            }
+
+            return RedirectToAction($"Details/{typeMaker.Maker.Id}");
+          
+
+
+        }
+
+        
 
     }
 }

@@ -64,7 +64,9 @@ namespace Biker.Web.Controllers.MotorBike
                 .Include(m => m.MotorBikeSpares)
                 .Include(m => m.BikeType)
                 .Include(m => m.BikeMaker)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .OrderBy(m => m.MotorBikeSpares.OrderBy(mbs=> mbs.YearSince))
+                .FirstOrDefaultAsync(m => m.Id == id)
+                ;
 
             if (motorBikeEntity == null)
             {
