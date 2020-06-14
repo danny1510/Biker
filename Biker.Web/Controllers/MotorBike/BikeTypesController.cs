@@ -116,8 +116,8 @@ namespace Biker.Web.Controllers.MotorBike
         public async Task<IActionResult> Delete(int? id)
         {
             var bikeTypeEntity = _context.BikeTypes
-                .Include(t => t.Motorbikes)
                 .Include(t => t.TypeMaker)
+                .ThenInclude (tm=> tm.Motorbikes)
                 .FirstOrDefault(t=> t.Id == id)
                 ;
             
@@ -126,7 +126,7 @@ namespace Biker.Web.Controllers.MotorBike
                 return NotFound();
             }
 
-            if (bikeTypeEntity.Motorbikes.Count>0 || bikeTypeEntity.TypeMaker.Count > 0)
+            if (bikeTypeEntity.TypeMaker.Count > 0)
             {
                 var error = "The Motorbike type can't be deleted because it has related records.";
                 return RedirectToAction("Index", new RouteValueDictionary(new { Controller = "BikeTypes", error }));

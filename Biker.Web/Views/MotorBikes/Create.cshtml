@@ -12,35 +12,28 @@
     <div class="col-md-4">
         <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @*<input type="hidden" asp-for="MakerId" />
-        <input type="hidden" asp-for="TypeId" />*@
+
 
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Name*</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Cylinder" class="control-label"></label>
+                <label asp-for="Cylinder" class="control-label">Cylinder*</label>
                 <input asp-for="Cylinder" class="form-control" />
                 <span asp-validation-for="Cylinder" class="text-danger"></span>
             </div>
 
-            @*<div class="form-group">
-                <label asp-for="ImageFile" class="control-label"></label>
-                <input asp-for="ImageFile" class="form-control" type="file" />
-                <span asp-validation-for="ImageFile" class="text-danger"></span>
-            </div>*@
-
             <div class="form-group">
-                <label asp-for="MakerId" class="control-label"></label>
+                <label asp-for="MakerId" class="control-label">Maker*</label>
                 <select asp-for="MakerId" asp-items="Model.Makers" class="form-control"></select>
                 <span asp-validation-for="MakerId" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="TypeId" class="control-label"></label>
+                <label asp-for="TypeId" class="control-label">Type*</label>
                 <select asp-for="TypeId" asp-items="Model.Types" class="form-control"></select>
                 <span asp-validation-for="TypeId" class="text-danger"></span>
             </div>
@@ -57,7 +50,7 @@
             <div class="form-group">
                 <label asp-for="WidthTireF" class="control-label"></label>
                 <input asp-for="WidthTireF" class="form-control" />
-                <span asp-validation-for="WidthTireF" class="text-danger"></span>      
+                <span asp-validation-for="WidthTireF" class="text-danger"></span>
             </div>
 
             <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
@@ -108,6 +101,58 @@
     </div>
 </div>
 
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+    	$(document).ready(function () {
+            $("#MakerId").change(function () {
+            	debugger;
+                var x = $("#MakerId").val();
+                $("#TypeId").empty();
+            	$.ajax({
+                	type: 'POST',
+                	url: '@Url.Action("GetTypesAsync")',
+                	dataType: 'json',
+                    data: { makerId: $("#MakerId").val() },
+                    success: function (typeMakers) {
+                        $("#TypeId").append('<option value="0">(Select a Type...)</option>');
+                        $.each(typeMakers, function (i, typeMaker) {
+                            $("#TypeId").append('<option value="'
+                                + typeMaker.bikeType.id + '">'
+                                + typeMaker.bikeType.name + '</option>');
+                    	});
+                	},
+                	error: function (ex) {
+                    	alert('Failed to retrieve Types.' + ex.statusText);
+                	}
+            	});
+            	return false;
+        	})
+    	});
+    </script>
+
+    <script type="text/javascript">
+    	$(document).ready(function () {
+            $("#Millimeters").change(function () {
+
+            	$.ajax({
+                	type: 'POST',
+                	url: '@Url.Action("IsMillimeters")',
+                	dataType: 'json',
+                    data: { millimeters: $("#Millimeters").val(),model: $("#Model").val() },
+            	});
+            	return false;
+        	})
+    	});
+    </script>
+
+
+
 }
+
+
+
+
+
+

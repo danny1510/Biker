@@ -71,10 +71,12 @@ namespace Biker.Web.Data.Entities
 
         //Modelo desde
         [Display(Name = "YEAR SINCE")]
+        [Required]
         public int YearSince { get; set; }
 
         //Modelo hasta
         [Display(Name = "YEAR UNTIL")]
+        [Required]
         public int YearUntil { get; set; }
 
         //Imagen

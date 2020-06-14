@@ -1,4 +1,5 @@
 ﻿using Biker.Web.Data;
+using Biker.Web.Data.Entities;
 using Biker.Web.Helpers;
 using Biker.Web.Models.MotorBike;
 using Microsoft.AspNetCore.Mvc;
@@ -39,15 +40,17 @@ namespace Biker.Web.Controllers.MotorBike
 
             return View(_context.MotorBikes
                 .Include(m => m.MotorBikeSpares)
-                .Include(m => m.BikeMaker)
-                .Include(m => m.BikeType)
+                .Include(m => m.TypeMaker)
+                .ThenInclude(tm => tm.BikeMaker)
+                .Include(m => m.TypeMaker)
+                .ThenInclude(tm => tm.BikeType)
                 .OrderBy(m => m.Name)
-                .OrderBy(m => m.BikeMaker.Name)
+                .OrderBy(m => m.TypeMaker.BikeMaker.Name)
                 );
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int? id,string error)
+        public async Task<IActionResult> Details(int? id, string error)
         {
             if (id == null)
             {
@@ -58,13 +61,14 @@ namespace Biker.Web.Controllers.MotorBike
             {
                 ModelState.AddModelError(string.Empty, error);
             }
-
-
+            //TODO: ordenar por años since descendente
             var motorBikeEntity = await _context.MotorBikes
                 .Include(m => m.MotorBikeSpares)
-                .Include(m => m.BikeType)
-                .Include(m => m.BikeMaker)
-                .OrderBy(m => m.MotorBikeSpares.OrderBy(mbs=> mbs.YearSince))
+                .OrderByDescending(m => m.MotorBikeSpares.OrderByDescending(mts => mts.YearSince))
+                .Include(m => m.TypeMaker)
+                .ThenInclude(tm => tm.BikeType)
+                .Include(m => m.TypeMaker)
+                .ThenInclude(tm => tm.BikeMaker)              
                 .FirstOrDefaultAsync(m => m.Id == id)
                 ;
 
@@ -79,10 +83,18 @@ namespace Biker.Web.Controllers.MotorBike
         [HttpGet]
         public IActionResult Create()
         {
+
             var model = new AddMotorBikeViewModel
             {
                 Makers = _combosHelper.GetComboMakers(),
                 Types = _combosHelper.GetComboTypes(),
+                Cylinder = 125,
+                FrontTire = 17,
+                HeightTireF = 100,
+                HeightTireR = 100,
+                RearTire = 17,
+                WidthTireF = 100,
+                WidthTireR = 100,
                 Millimeters = true
             };
 
@@ -115,8 +127,10 @@ namespace Biker.Web.Controllers.MotorBike
             }
 
             var motorBike = await _context.MotorBikes
-                 .Include(m => m.BikeMaker)
-                 .Include(m => m.BikeType)
+                 .Include(m => m.TypeMaker)
+                 .ThenInclude(m => m.BikeMaker)
+                 .Include(m => m.TypeMaker)
+                 .ThenInclude(m => m.BikeType)
                  .FirstOrDefaultAsync(m => m.Id == id);
 
             if (motorBike == null)
@@ -175,8 +189,8 @@ namespace Biker.Web.Controllers.MotorBike
             }
 
             var motorBike = await _context.MotorBikes
-                 .Include(m => m.BikeMaker)
-                 .Include(m => m.BikeType)
+                 .Include(m => m.TypeMaker)
+                 .ThenInclude(tm => tm.BikeType)
                  .Include(m => m.MotorBikeSpares)
                  .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -202,7 +216,7 @@ namespace Biker.Web.Controllers.MotorBike
                 return RedirectToAction("Index", new RouteValueDictionary(new { Controller = "MotorBikes", err.Message }));
             }
 
-          
+
             return RedirectToAction($"{nameof(Index)}");
         }
 
@@ -321,10 +335,10 @@ namespace Biker.Web.Controllers.MotorBike
             if (motorBikeSpare.BikerMotors.Count > 0)
             {
                 var error = "The Motorbike Spare can't be deleted because it has related records.";
-                return RedirectToAction($"{nameof(Details)}/{motorBikeSpare.MotorBike.Id}", new RouteValueDictionary(new 
+                return RedirectToAction($"{nameof(Details)}/{motorBikeSpare.MotorBike.Id}", new RouteValueDictionary(new
                 {
                     Controller = "MotorBikes",
-                    error 
+                    error
                 }));
 
             }
@@ -336,7 +350,7 @@ namespace Biker.Web.Controllers.MotorBike
             }
             catch (System.Exception err)
             {
-                return RedirectToAction($"{nameof(Details)}/{motorBikeSpare.MotorBike.Id}", new RouteValueDictionary(new {Controller = "MotorBikes", err.Message }));
+                return RedirectToAction($"{nameof(Details)}/{motorBikeSpare.MotorBike.Id}", new RouteValueDictionary(new { Controller = "MotorBikes", err.Message }));
             }
 
             return RedirectToAction($"{nameof(Details)}/{motorBikeSpare.MotorBike.Id}");
@@ -344,6 +358,57 @@ namespace Biker.Web.Controllers.MotorBike
         }
 
 
+        public async Task<JsonResult> GetTypesAsync(int makerId)
+        {
+            var maker = await _context.BikeMakers
+                //.Include(tm=> tm.Maker)
+                .Include(bm => bm.TypeMaker)
+                .ThenInclude(tm => tm.BikeType)
+                //.Where(tm => tm.Id == makerId)
+                //.OrderBy(tm => tm.Type.Name)
+                .FirstOrDefaultAsync(tm => tm.Id == makerId);
+            //.OrderBy(tm => tm.Type.Name)
+            //.ToListAsync();
+
+            var typeMakers = new BikeMakerEntity
+            {
+                Id = maker.Id,
+                Name = maker.Name,
+                TypeMaker = maker.TypeMaker.Select(tm => new TypeMakerEntity
+                {
+                    Id = tm.Id,
+                    BikeType = new BikeTypeEntity
+                    {
+                        Id = tm.BikeType.Id,
+                        Name = tm.BikeType.Name,
+                    }
+                }).ToList()
+            };
+
+
+            return Json(typeMakers.TypeMaker);
+        }
+
+        public IActionResult IsMillimeters(bool millimeters, AddMotorBikeViewModel model)
+        {
+            var modelo = new AddMotorBikeViewModel
+            {
+                Makers = model.Makers,
+                Types = model.Types,
+                Millimeters = millimeters,
+                Name = model.Name,
+                Cylinder = model.Cylinder,
+                FrontTire = model.FrontTire,
+                HeightTireF = model.HeightTireF,
+                HeightTireR = model.HeightTireR,
+                RearTire = model.RearTire,
+                WidthTireF = model.WidthTireF,
+                WidthTireR = model.WidthTireR,
+
+            };
+            return View(modelo);
+
+        }
 
     }
 }

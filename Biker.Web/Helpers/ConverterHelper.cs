@@ -2,7 +2,9 @@
 using Biker.Web.Data.Entities;
 using Biker.Web.Data.Entities.MotorBike;
 using Biker.Web.Models.MotorBike;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Biker.Web.Helpers
@@ -25,15 +27,18 @@ namespace Biker.Web.Helpers
                 Id = (model.Id != 0) ? model.Id : 0,
                 Name = model.Name,
                 Cylinder = model.Cylinder,
-                BikeMaker = await _dataContext.BikeMakers.FindAsync(model.MakerId),
-                BikeType = await  _dataContext.BikeTypes.FindAsync(model.TypeId),
+                TypeMaker = await _dataContext.TypeMakers
+                .Include(tm=> tm.BikeMaker)
+                .Include(tm => tm.BikeType)
+                .FirstOrDefaultAsync(tm => tm.BikeMaker.Id == model.MakerId && tm.BikeType.Id == model.TypeId), //TODO: REVISAR
                 WidthTireF = model.WidthTireF,
                 HeightTireF = model.HeightTireF,
                 FrontTire = model.FrontTire,
                 WidthTireR = model.WidthTireR,
                 HeightTireR = model.HeightTireR,
                 RearTire = model.RearTire,
-                Millimeters = model.Millimeters,
+                Millimeters = model.Millimeters
+
             };
 
         }
@@ -45,8 +50,6 @@ namespace Biker.Web.Helpers
                 Id = model.Id,
                 Name = model.Name,
                 Cylinder = model.Cylinder,
-                BikeMaker = model.BikeMaker,
-                BikeType = model.BikeType,
                 WidthTireF = model.WidthTireF,
                 HeightTireF = model.HeightTireF,
                 FrontTire = model.FrontTire,
@@ -54,10 +57,11 @@ namespace Biker.Web.Helpers
                 HeightTireR = model.HeightTireR,
                 RearTire = model.RearTire,
                 Millimeters = model.Millimeters,
-                MakerId = model.BikeMaker.Id,
+                MakerId = model.TypeMaker.BikeMaker.Id,
                 Makers = _combosHelper.GetComboMakers(),
-                TypeId = model.BikeType.Id,
+                TypeId = model.TypeMaker.BikeType.Id,
                 Types = _combosHelper.GetComboTypes(),
+                TypeMaker = model.TypeMaker
     
             };
 

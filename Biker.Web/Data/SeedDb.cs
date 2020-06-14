@@ -47,6 +47,7 @@ namespace Biker.Web.Data
                 var maker6 = await CheckBikeMakerAsync("KTM");
                 var maker7 = await CheckBikeMakerAsync("AUTECO");
                 var maker8 = await CheckBikeMakerAsync("AKT");
+
                 var type = await CheckBikeTypeAsync("ENDURO");
                 var type2 = await CheckBikeTypeAsync("URBANA");
                 var type3 = await CheckBikeTypeAsync("NAKED");
@@ -54,10 +55,18 @@ namespace Biker.Web.Data
                 var type5 = await CheckBikeTypeAsync("SUPER DEPORTIVA");
                 var type6 = await CheckBikeTypeAsync("AUTO Y SEMI");
 
-                var motorbike = await CheckMotorBikeAsync("XTZ", 250, true, 90, 90, 21, 120, 80, 18, maker, type);
-                var motorbike2 = await CheckMotorBikeAsync("BOXER", 100, false, 275, 0, 17, 300, 0, 17, maker7, type2);
-                var motorbike3 = await CheckMotorBikeAsync("MT09", 900, true, 120, 70, 17, 180, 55, 17, maker, type4);
-                var motorbike4 = await CheckMotorBikeAsync("XT660Z", 660, true, 90, 90, 21, 130, 80, 17, maker, type);
+                var typemaker =  await CkeckTypeMakerAsync(maker, type);
+                var typemaker2 = await CkeckTypeMakerAsync(maker, type4);
+
+                var typemaker3 = await CkeckTypeMakerAsync(maker7, type2);
+                var typemaker4 = await CkeckTypeMakerAsync(maker3, type4);
+                var typemaker5 = await CkeckTypeMakerAsync(maker4, type4);
+
+
+                var motorbike = await CheckMotorBikeAsync("XTZ", 250, true, 90, 90, 21, 120, 80, 18, typemaker);
+                var motorbike2 = await CheckMotorBikeAsync("BOXER", 100, false, 275, 0, 17, 300, 0, 17, typemaker3);
+                var motorbike3 = await CheckMotorBikeAsync("MT09", 900, true, 120, 70, 17, 180, 55, 17, typemaker2);
+                var motorbike4 = await CheckMotorBikeAsync("XT660Z", 660, true, 90, 90, 21, 130, 80, 17, typemaker);
 
                 var bikespare = await CheckMotorBikeSpareAsync(2015, 2019, motorbike);
                 var bikespare2 = await CheckMotorBikeSpareAsync(2019, 0, motorbike);
@@ -66,10 +75,8 @@ namespace Biker.Web.Data
 
                 await CkeckBikermotorAsync(biker, bikespare);
                 await CkeckBikermotorAsync(biker2, bikespare2);
-
             }
         }
-
 
         private async Task<BikerEntity> CheckcustomerAsync(UserEntity customer)
         {
@@ -148,10 +155,23 @@ namespace Biker.Web.Data
 
         }
 
-        private async Task<MotorBikeEntity> CheckMotorBikeAsync(string name, int cylinder, bool millimeters,
-            int orgw_ft, int orgh_ft, int fronttire, int orgw_rt, int orgh_rt, int reartire, BikeMakerEntity maker, BikeTypeEntity type)
+        private async Task<TypeMakerEntity> CkeckTypeMakerAsync(BikeMakerEntity maker, BikeTypeEntity type)
         {
+            var TypeMake = new TypeMakerEntity 
+            { 
+                BikeMaker = maker,
+                BikeType = type,
+            };
 
+            await _dataContext.TypeMakers.AddAsync(TypeMake);
+            await _dataContext.SaveChangesAsync();
+
+            return TypeMake;
+        }
+
+        private async Task<MotorBikeEntity> CheckMotorBikeAsync(string name, int cylinder, bool millimeters,
+        int orgw_ft, int orgh_ft, int fronttire, int orgw_rt, int orgh_rt, int reartire, TypeMakerEntity typeMaker)
+        {
             var motorbike = new MotorBikeEntity
             {
                 Name = name,
@@ -163,10 +183,8 @@ namespace Biker.Web.Data
                 WidthTireR = orgw_rt,
                 HeightTireR = orgh_rt,
                 RearTire = reartire,
-                BikeMaker = maker,
-                BikeType = type,
+                TypeMaker = typeMaker,
                 MotorBikeSpares = new List<MotorBikeSpareEntity>(),
-
             };
             await _dataContext.MotorBikes.AddAsync(motorbike);
             await _dataContext.SaveChangesAsync();
@@ -174,9 +192,7 @@ namespace Biker.Web.Data
             return motorbike;
         }
 
-        private async Task<MotorBikeSpareEntity> CheckMotorBikeSpareAsync(int yearsince, int until,
-            MotorBikeEntity motorBike
-            )
+        private async Task<MotorBikeSpareEntity> CheckMotorBikeSpareAsync(int yearsince, int until, MotorBikeEntity motorBike)
         {
             var bikespare = new MotorBikeSpareEntity
             {
@@ -192,8 +208,6 @@ namespace Biker.Web.Data
 
             return bikespare;
         }
-
-
 
         private async Task CkeckBikermotorAsync(BikerEntity biker, MotorBikeSpareEntity bikespare)
         {

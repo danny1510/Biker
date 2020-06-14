@@ -1,5 +1,4 @@
-﻿using Biker.Web.Data.Entities.MotorBike;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Biker.Web.Data.Entities
@@ -22,7 +21,7 @@ namespace Biker.Web.Data.Entities
            ? null
            : $"https://TBD.net{ImageUrl.Substring(1)}";
 
-        public ICollection<MotorBikeEntity>Motorbikes { get; set; }
+        //public ICollection<MotorBikeEntity>Motorbikes { get; set; }
         public ICollection<TypeMakerEntity> TypeMaker { get; set; }
 
 

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Biker.Web.Migrations
 {
-    public partial class initialdb : Migration
+    public partial class INITIALDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -42,7 +42,7 @@ namespace Biker.Web.Migrations
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     FirstName = table.Column<string>(maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(maxLength: 50, nullable: true),
                     Address = table.Column<string>(maxLength: 100, nullable: true)
                 },
                 constraints: table =>
@@ -75,6 +75,48 @@ namespace Biker.Web.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BikeTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Providers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Providers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SpareBrands",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpareBrands", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SpareCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    ImageUrl = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpareCategories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,6 +264,83 @@ namespace Biker.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TypeMakers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ImageUrl = table.Column<string>(nullable: true),
+                    BikeMakerId = table.Column<int>(nullable: true),
+                    BikeTypeId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TypeMakers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TypeMakers_BikeMakers_BikeMakerId",
+                        column: x => x.BikeMakerId,
+                        principalTable: "BikeMakers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TypeMakers_BikeTypes_BikeTypeId",
+                        column: x => x.BikeTypeId,
+                        principalTable: "BikeTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProviderDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    ProviderId = table.Column<int>(nullable: true),
+                    Direccion = table.Column<string>(nullable: true),
+                    Latitude = table.Column<double>(nullable: false),
+                    Longitude = table.Column<double>(nullable: false),
+                    Url = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProviderDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProviderDetails_Providers_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "Providers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BrandCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    SpareBrandId = table.Column<int>(nullable: true),
+                    SpareCategoryId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BrandCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BrandCategories_SpareBrands_SpareBrandId",
+                        column: x => x.SpareBrandId,
+                        principalTable: "SpareBrands",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BrandCategories_SpareCategories_SpareCategoryId",
+                        column: x => x.SpareCategoryId,
+                        principalTable: "SpareCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MotorBikes",
                 columns: table => new
                 {
@@ -236,51 +355,67 @@ namespace Biker.Web.Migrations
                     WidthTireR = table.Column<int>(nullable: false),
                     HeightTireF = table.Column<int>(nullable: false),
                     HeightTireR = table.Column<int>(nullable: false),
-                    BikeMakerId = table.Column<int>(nullable: true),
-                    BikeTypeId = table.Column<int>(nullable: true)
+                    TypeMakerId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MotorBikes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MotorBikes_BikeMakers_BikeMakerId",
-                        column: x => x.BikeMakerId,
-                        principalTable: "BikeMakers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_MotorBikes_BikeTypes_BikeTypeId",
-                        column: x => x.BikeTypeId,
-                        principalTable: "BikeTypes",
+                        name: "FK_MotorBikes_TypeMakers_TypeMakerId",
+                        column: x => x.TypeMakerId,
+                        principalTable: "TypeMakers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "TypeMakers",
+                name: "Spares",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Code = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    Name1 = table.Column<string>(nullable: true),
+                    Name2 = table.Column<string>(nullable: true),
+                    Price = table.Column<float>(nullable: false),
+                    LastUpdate = table.Column<DateTime>(nullable: false),
+                    Discount = table.Column<float>(nullable: false),
                     ImageUrl = table.Column<string>(nullable: true),
-                    MakerId = table.Column<int>(nullable: false),
-                    TypeId = table.Column<int>(nullable: false)
+                    BrandCategoryId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TypeMakers", x => x.Id);
+                    table.PrimaryKey("PK_Spares", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TypeMakers_BikeMakers_MakerId",
-                        column: x => x.MakerId,
-                        principalTable: "BikeMakers",
+                        name: "FK_Spares_BrandCategories_BrandCategoryId",
+                        column: x => x.BrandCategoryId,
+                        principalTable: "BrandCategories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MotorBikeSaleEntity",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Price = table.Column<decimal>(nullable: false),
+                    IsAvailable = table.Column<bool>(nullable: false),
+                    Remasrks = table.Column<string>(nullable: true),
+                    ImageUrl = table.Column<string>(nullable: true),
+                    MotorBikeId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MotorBikeSaleEntity", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TypeMakers_BikeTypes_TypeId",
-                        column: x => x.TypeId,
-                        principalTable: "BikeTypes",
+                        name: "FK_MotorBikeSaleEntity_MotorBikes_MotorBikeId",
+                        column: x => x.MotorBikeId,
+                        principalTable: "MotorBikes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -306,6 +441,32 @@ namespace Biker.Web.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SpareProviders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    ProviderId = table.Column<int>(nullable: false),
+                    SpareId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpareProviders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SpareProviders_Providers_ProviderId",
+                        column: x => x.ProviderId,
+                        principalTable: "Providers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SpareProviders_Spares_SpareId",
+                        column: x => x.SpareId,
+                        principalTable: "Spares",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BikerMotors",
                 columns: table => new
                 {
@@ -327,6 +488,32 @@ namespace Biker.Web.Migrations
                         name: "FK_BikerMotors_MotorBikeSpares_MotorBikeSpareId",
                         column: x => x.MotorBikeSpareId,
                         principalTable: "MotorBikeSpares",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BikeSpares",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    MotorBikeSpareId = table.Column<int>(nullable: true),
+                    SpareId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BikeSpares", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BikeSpares_MotorBikeSpares_MotorBikeSpareId",
+                        column: x => x.MotorBikeSpareId,
+                        principalTable: "MotorBikeSpares",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BikeSpares_Spares_SpareId",
+                        column: x => x.SpareId,
+                        principalTable: "Spares",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -386,19 +573,39 @@ namespace Biker.Web.Migrations
                 column: "UserEntityId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BikeSpares_MotorBikeSpareId",
+                table: "BikeSpares",
+                column: "MotorBikeSpareId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BikeSpares_SpareId",
+                table: "BikeSpares",
+                column: "SpareId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BrandCategories_SpareBrandId",
+                table: "BrandCategories",
+                column: "SpareBrandId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BrandCategories_SpareCategoryId",
+                table: "BrandCategories",
+                column: "SpareCategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Managers_UserEntityId",
                 table: "Managers",
                 column: "UserEntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MotorBikes_BikeMakerId",
+                name: "IX_MotorBikes_TypeMakerId",
                 table: "MotorBikes",
-                column: "BikeMakerId");
+                column: "TypeMakerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MotorBikes_BikeTypeId",
-                table: "MotorBikes",
-                column: "BikeTypeId");
+                name: "IX_MotorBikeSaleEntity_MotorBikeId",
+                table: "MotorBikeSaleEntity",
+                column: "MotorBikeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MotorBikeSpares_MotorBikeId",
@@ -406,14 +613,34 @@ namespace Biker.Web.Migrations
                 column: "MotorBikeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TypeMakers_MakerId",
-                table: "TypeMakers",
-                column: "MakerId");
+                name: "IX_ProviderDetails_ProviderId",
+                table: "ProviderDetails",
+                column: "ProviderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TypeMakers_TypeId",
+                name: "IX_SpareProviders_ProviderId",
+                table: "SpareProviders",
+                column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SpareProviders_SpareId",
+                table: "SpareProviders",
+                column: "SpareId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Spares_BrandCategoryId",
+                table: "Spares",
+                column: "BrandCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TypeMakers_BikeMakerId",
                 table: "TypeMakers",
-                column: "TypeId");
+                column: "BikeMakerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TypeMakers_BikeTypeId",
+                table: "TypeMakers",
+                column: "BikeTypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -437,10 +664,19 @@ namespace Biker.Web.Migrations
                 name: "BikerMotors");
 
             migrationBuilder.DropTable(
+                name: "BikeSpares");
+
+            migrationBuilder.DropTable(
                 name: "Managers");
 
             migrationBuilder.DropTable(
-                name: "TypeMakers");
+                name: "MotorBikeSaleEntity");
+
+            migrationBuilder.DropTable(
+                name: "ProviderDetails");
+
+            migrationBuilder.DropTable(
+                name: "SpareProviders");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -452,10 +688,28 @@ namespace Biker.Web.Migrations
                 name: "MotorBikeSpares");
 
             migrationBuilder.DropTable(
+                name: "Providers");
+
+            migrationBuilder.DropTable(
+                name: "Spares");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "MotorBikes");
+
+            migrationBuilder.DropTable(
+                name: "BrandCategories");
+
+            migrationBuilder.DropTable(
+                name: "TypeMakers");
+
+            migrationBuilder.DropTable(
+                name: "SpareBrands");
+
+            migrationBuilder.DropTable(
+                name: "SpareCategories");
 
             migrationBuilder.DropTable(
                 name: "BikeMakers");

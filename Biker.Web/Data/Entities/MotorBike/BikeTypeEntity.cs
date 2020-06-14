@@ -1,5 +1,4 @@
-﻿using Biker.Web.Data.Entities.MotorBike;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Biker.Web.Data.Entities
@@ -15,7 +14,7 @@ namespace Biker.Web.Data.Entities
         [Required(ErrorMessage = "The field {0} is mandatory.")]
         public string Name { get; set; }
 
-        public ICollection<MotorBikeEntity> Motorbikes { get; set; }
+        //public ICollection<MotorBikeEntity> Motorbikes { get; set; }
 
         public ICollection<TypeMakerEntity> TypeMaker { get; set; }
 

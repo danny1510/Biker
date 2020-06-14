@@ -39,7 +39,7 @@ else
 
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TypeMaker.FirstOrDefault().Type)
+                    @Html.DisplayNameFor(model => model.TypeMaker.FirstOrDefault().BikeType.Name)
                 </th>
 
                 <th></th>
@@ -58,7 +58,7 @@ else
                     </td>
 
                     <td>
-                        @Html.DisplayFor(modelItem => item.Type.Name)
+                        @Html.DisplayFor(modelItem => item.BikeType.Name)
                     </td>
 
                     <td>

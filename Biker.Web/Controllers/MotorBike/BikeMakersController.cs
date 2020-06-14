@@ -43,7 +43,7 @@ namespace Biker.Web.Controllers.MotorBike
 
             return View(_context.BikeMakers
                 .Include(bm=>bm.TypeMaker)
-                .ThenInclude(tm => tm.Type)
+                .ThenInclude(tm => tm.BikeType)
                 .OrderBy(m => m.Name));
         }
 
@@ -61,7 +61,7 @@ namespace Biker.Web.Controllers.MotorBike
 
             var bikeMakerEntity = await _context.BikeMakers
                 .Include(bm => bm.TypeMaker)
-                .ThenInclude(tm=> tm.Type)
+                .ThenInclude(tm=> tm.BikeType)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (bikeMakerEntity == null)
@@ -178,7 +178,8 @@ namespace Biker.Web.Controllers.MotorBike
             }
 
             var bikeMakerEntity = await _context.BikeMakers
-                .Include(m => m.Motorbikes)
+                .Include(m => m.TypeMaker)
+                .ThenInclude(tm=> tm.Motorbikes)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
 
@@ -187,7 +188,7 @@ namespace Biker.Web.Controllers.MotorBike
                 return NotFound();
             }
 
-            if (bikeMakerEntity.Motorbikes.Count > 0)
+            if (bikeMakerEntity.TypeMaker.Count > 0)
             {
 
                 var error = "The Motorbike Maker can't be deleted because it has related records.";
@@ -238,7 +239,7 @@ namespace Biker.Web.Controllers.MotorBike
             {
                 Types = _combosHelper.GetComboTypes(),
                 MakerId = maker.Id,
-                Maker = maker
+                BikeMaker = maker
             };
 
             return View(typeMakermodel);
@@ -250,16 +251,16 @@ namespace Biker.Web.Controllers.MotorBike
         {
 
     
-            model.Maker = await _context.BikeMakers.FindAsync(model.MakerId);
-            model.Type = await _context.BikeTypes.FindAsync(model.TypeId);
+            model.BikeMaker = await _context.BikeMakers.FindAsync(model.MakerId);
+            model.BikeType = await _context.BikeTypes.FindAsync(model.TypeId);
 
-            if (model.Maker == null)
+            if (model.BikeMaker == null)
             {
                 model.Types = _combosHelper.GetComboTypes();
                 return View(model);
             }
 
-            if (model.Type == null)
+            if (model.BikeType == null)
             {
                 model.Types = _combosHelper.GetComboTypes();
                 return View(model);
@@ -276,8 +277,8 @@ namespace Biker.Web.Controllers.MotorBike
                 var typeMakerEntity = new TypeMakerEntity
                 {
                     ImageUrl = path,
-                    Maker = await _context.BikeMakers.FindAsync(model.MakerId),
-                    Type = await _context.BikeTypes.FindAsync(model.TypeId)
+                    BikeMaker = await _context.BikeMakers.FindAsync(model.MakerId),
+                    BikeType = await _context.BikeTypes.FindAsync(model.TypeId)
                 };
 
                 try
@@ -304,8 +305,8 @@ namespace Biker.Web.Controllers.MotorBike
             }
 
             var typeMaker = await _context.TypeMakers
-                .Include(tm => tm.Type)
-                .Include(tm => tm.Maker)
+                .Include(tm => tm.BikeType)
+                .Include(tm => tm.BikeMaker)
                 .FirstAsync(tm => tm.Id == id);
 
             if (typeMaker == null)
@@ -318,10 +319,10 @@ namespace Biker.Web.Controllers.MotorBike
                 Id = typeMaker.Id,
                 ImageUrl = typeMaker.ImageUrl,
                 Types = _combosHelper.GetComboTypes(),
-                Type = typeMaker.Type,
-                MakerId = typeMaker.Maker.Id,
-                Maker = typeMaker.Maker,
-                TypeId = typeMaker.Type.Id
+                BikeType = typeMaker.BikeType,
+                MakerId = typeMaker.BikeMaker.Id,
+                BikeMaker = typeMaker.BikeMaker,
+                TypeId = typeMaker.BikeType.Id
             };
 
             return View(typeMakermodel);
@@ -332,16 +333,16 @@ namespace Biker.Web.Controllers.MotorBike
         public async Task<IActionResult> EditType(TypeMakerViewModel model)
         {
 
-            model.Maker = await _context.BikeMakers.FindAsync(model.MakerId);
-            model.Type = await _context.BikeTypes.FindAsync(model.TypeId);
+            model.BikeMaker = await _context.BikeMakers.FindAsync(model.MakerId);
+            model.BikeType = await _context.BikeTypes.FindAsync(model.TypeId);
 
-            if (model.Maker == null)
+            if (model.BikeMaker == null)
             {
                 model.Types = _combosHelper.GetComboTypes();
                 return View(model);
             }
 
-            if (model.Type == null)
+            if (model.BikeType == null)
             {
                 model.Types = _combosHelper.GetComboTypes();
                 return View(model);
@@ -359,8 +360,8 @@ namespace Biker.Web.Controllers.MotorBike
             {
                 Id = model.Id,
                 ImageUrl = path,
-                Maker = await _context.BikeMakers.FindAsync(model.MakerId),
-                Type = await _context.BikeTypes.FindAsync(model.TypeId)
+                BikeMaker = await _context.BikeMakers.FindAsync(model.MakerId),
+                BikeType = await _context.BikeTypes.FindAsync(model.TypeId)
             };
 
             try
@@ -384,7 +385,7 @@ namespace Biker.Web.Controllers.MotorBike
             }
 
             var typeMaker = await _context.TypeMakers
-                .Include(tm => tm.Maker)
+                .Include(tm => tm.BikeMaker)
                 .FirstOrDefaultAsync(tm => tm.Id == id);
                 
 
@@ -409,10 +410,10 @@ namespace Biker.Web.Controllers.MotorBike
             catch (DbUpdateConcurrencyException err)
             {
                 ModelState.AddModelError(string.Empty, err.Message);
-                   return RedirectToAction($"Details/{typeMaker.Maker.Id}", new RouteValueDictionary(new { Controller = "BikeMakers", err.Message }));
+                   return RedirectToAction($"Details/{typeMaker.BikeMaker.Id}", new RouteValueDictionary(new { Controller = "BikeMakers", err.Message }));
             }
 
-            return RedirectToAction($"Details/{typeMaker.Maker.Id}");
+            return RedirectToAction($"Details/{typeMaker.BikeMaker.Id}");
           
 
 

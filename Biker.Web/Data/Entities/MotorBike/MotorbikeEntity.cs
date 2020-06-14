@@ -48,19 +48,19 @@ namespace Biker.Web.Data.Entities.MotorBike
 
         //Perfil Llanta--> alto
 
-        [Display(Name = "HEIGH  FRONT TIRE ")]
-        [Range(1, 100, ErrorMessage = "You must select a valid heigh front tire.")]
+        [Display(Name = "HEIGH  FRONT TIRE")]
+        [Range(0, 100, ErrorMessage = "You must select a valid heigh front tire.")]
         public int HeightTireF { get; set; }
 
         [Display(Name = "HEIGH REAR TIRE")]
-        [Range(1, 100, ErrorMessage = "You must select a heigh rear tire.")]
+        [Range(0, 100, ErrorMessage = "You must select a heigh rear tire.")]
         public int HeightTireR { get; set; }
 
         public ICollection<MotorBikeSpareEntity> MotorBikeSpares { get; set; }
 
-        public BikeMakerEntity BikeMaker { get; set; }
+        public ICollection<MotorBikeSaleEntity> MotorBikeSales { get; set; }
 
-        public BikeTypeEntity BikeType { get; set; }
+        public TypeMakerEntity TypeMaker { get; set; }
 
         [Display(Name = "FRONT TIRE")]
         public string ReadNumberFrontMil => $"{WidthTireF}/{HeightTireF}-{FrontTire}";

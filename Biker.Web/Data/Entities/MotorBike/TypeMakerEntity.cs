@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Biker.Web.Data.Entities.MotorBike;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Biker.Web.Data.Entities
@@ -6,7 +7,7 @@ namespace Biker.Web.Data.Entities
     public class TypeMakerEntity
     {
 
-        //Marcatipo --> maneja las imagenes de los tipos para cada marca
+        //Tipo Marca--> maneja las imagenes de los tipos para cada marca
         public int Id { get; set; }
 
         [Display(Name = "IMAGE")]
@@ -17,10 +18,12 @@ namespace Biker.Web.Data.Entities
            ? null
            : $"https://TBD.net{ImageUrl.Substring(1)}";
 
-        public BikeMakerEntity Maker { get; set; }
+        public BikeMakerEntity BikeMaker { get; set; }
 
         [Display(Name = "TYPE")]
-        public BikeTypeEntity Type { get; set; }
+        public BikeTypeEntity BikeType { get; set; }
+
+        public ICollection<MotorBikeEntity> Motorbikes { get; set; }
 
 
     }
