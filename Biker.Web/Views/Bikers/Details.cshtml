@@ -43,8 +43,8 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Index" class="btn btn-default">Back to List</a>
-    <a asp-action="AddBikeToBiker" class="btn btn-primary">Add Motorbike</a>
+    <a asp-action="Index" class="btn btn-default"><i class="glyphicon glyphicon-chevron-left"></i>Back</a>
+    <a asp-action="AddBikeToBiker" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i>Add Motorbike</a>
 </div>
 
 
@@ -89,7 +89,7 @@ else
 
                     <td>
                         @*<a asp-action="DetailsBikeSpare" class="btn btn-info" asp-route-id="@item.Id">Details</a>*@
-                        <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog">Delete</button>
+                        <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog"><i class="glyphicon glyphicon-trash"></i></button>
                     </td>
                 </tr>
             }

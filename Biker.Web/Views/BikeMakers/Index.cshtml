@@ -4,75 +4,97 @@
     ViewData["Title"] = "Motorbike Makers";
 }
 
-<h2 class="text-center">Motorbike Makers</h2>
-<hr />
-
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+<br />
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    
+    <a asp-action="Create" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
 
-            <th>
-               #TYPES
-            </th>
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @if (!string.IsNullOrEmpty(item.ImageUrl))
-                {
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center"><b>Motorbike Makers</b></h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-hover table-responsive table-striped" id="MyTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.ImageUrl)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Name)
+                            </th>
 
-                    <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:200px;height:auto;max-width: 100%; height: auto;" />
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TypeMaker.Count)
-            </td>
-            <td>
-                <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>
-                <a asp-action="Details" class="btn btn-info" asp-route-id="@item.Id">Details</a>
-                <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog">Delete</button>
+                            <th>
+                                #TYPES
+                            </th>
 
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody >
+                        @foreach (var item in Model)
+                        {
+                            <tr class="MakerDetails" data-id="@item.Id">
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
 
-<partial name="_DeleteDialog"/>
+                                        <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:100px;height:auto;max-width: 100%; height: auto;" />
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TypeMaker.Count)
+                                    <a asp-action="Details" class="btn btn-default" asp-route-id="@item.Id"><i class="glyphicon glyphicon-list"></i></a>
+
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.Id"><i class="glyphicon-pencil"></i></a>
+                                      @*<a asp-action="Details" class="btn btn-info" asp-route-id="@item.Id"><i class="glyphicon glyphicon-list"></i></a>*@
+                                    <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog"><i class="glyphicon glyphicon-trash"></i></button>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_DeleteDialog" />
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
+    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            // Delete item
-            var item_to_delete;
 
+            $('#MyTable').DataTable();
+            // Delete item
+
+            var id_details;
+
+            $(".MakerDetails").click(function (e) {
+                id_details = e.currentTarget.dataset.id;
+                window.location.href = '/BikeMakers/Details/' + id_details;
+          });
+
+            var item_to_delete;
             $('.deleteItem').click((e) => {
                 item_to_delete = e.currentTarget.dataset.id;
             });
 
             $("#btnYesDelete").click(function () {
-             
                 window.location.href = '/BikeMakers/Delete/' + item_to_delete;
             });
         });

@@ -19,7 +19,7 @@ namespace Biker.Web.Controllers.MotorBike
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string error)
+        public IActionResult Index(string error)
         {
             if (!string.IsNullOrEmpty(error))
             {
@@ -27,7 +27,12 @@ namespace Biker.Web.Controllers.MotorBike
             }
 
 
-            return View(await _context.BikeTypes.ToListAsync());
+            return View(_context.BikeTypes
+                .Include(bm => bm.TypeCategories)
+                .ThenInclude(tm => tm.SpareCategory)
+                .OrderBy(m => m.Name));
+
+            //return View(await _context.BikeTypes.ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)

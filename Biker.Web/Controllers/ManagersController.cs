@@ -179,25 +179,24 @@ namespace Biker.Web.Controllers
                 return NotFound();
             }
 
+            if (!ManagerEntityExists(id.Value))
+            {
+                return NotFound();
+            }
+
             var managerEntity = await _context.Managers
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (managerEntity == null)
             {
                 return NotFound();
             }
 
-            return View(managerEntity);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var managerEntity = await _context.Managers.FindAsync(id);
             _context.Managers.Remove(managerEntity);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool ManagerEntityExists(int id)
         {

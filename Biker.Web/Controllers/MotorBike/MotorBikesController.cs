@@ -314,7 +314,6 @@ namespace Biker.Web.Controllers.MotorBike
             return View(model);
         }
 
-
         public async Task<IActionResult> DeleteBikeS(int? id)
         {
             if (id == null)
@@ -340,7 +339,6 @@ namespace Biker.Web.Controllers.MotorBike
                     Controller = "MotorBikes",
                     error
                 }));
-
             }
 
             try
@@ -357,18 +355,13 @@ namespace Biker.Web.Controllers.MotorBike
 
         }
 
-
         public async Task<JsonResult> GetTypesAsync(int makerId)
         {
             var maker = await _context.BikeMakers
-                //.Include(tm=> tm.Maker)
                 .Include(bm => bm.TypeMaker)
                 .ThenInclude(tm => tm.BikeType)
-                //.Where(tm => tm.Id == makerId)
-                //.OrderBy(tm => tm.Type.Name)
                 .FirstOrDefaultAsync(tm => tm.Id == makerId);
-            //.OrderBy(tm => tm.Type.Name)
-            //.ToListAsync();
+            
 
             var typeMakers = new BikeMakerEntity
             {

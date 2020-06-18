@@ -1,0 +1,24 @@
+﻿@model Biker.Web.Models.Provider.AddProviderViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Provider</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+          <partial name="_AddProvider" />
+
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-default" ><i class="glyphicon glyphicon-chevron-left"></i>Back</a>
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

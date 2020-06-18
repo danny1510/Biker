@@ -48,15 +48,18 @@
                         <li><a asp-area="" asp-controller="BikeMakers" asp-action="Index">Makers</a></li>
                         <li><a asp-area="" asp-controller="BikeTypes" asp-action="Index">Bike Types</a></li>
                         <li><a asp-area="" asp-controller="MotorBikes" asp-action="Index">MotorBikes</a></li>
+                        <li><a asp-area="" asp-controller="SpareBrands" asp-action="Index">Spare Brands</a></li>
+                        <li><a asp-area="" asp-controller="SpareCategories" asp-action="Index">Spare Categories</a></li>
+                        <li><a asp-area="" asp-controller="Providers" asp-action="Index">Providers</a></li>
 
-                            }
+                    }
 
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li><a asp-area="" asp-controller="Account" asp-action="ChangeUser">@User.Identity.Name</a></li>
+                        @*<li><a asp-area="" asp-controller="Account" asp-action="ChangeUser">@User.Identity.Name</a></li>*@
                         <li><a asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
                     }
                     else

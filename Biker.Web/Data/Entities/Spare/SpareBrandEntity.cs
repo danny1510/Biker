@@ -1,4 +1,5 @@
 ﻿using Biker.Web.Data.Entities.Spare;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,9 +22,6 @@ namespace Biker.Web.Data.Entities
         public string ImageFullPath => string.IsNullOrEmpty(ImageUrl)
         ? null
         : $"https://TBD.net{ImageUrl.Substring(1)}";
-
-
-
 
     }
 }

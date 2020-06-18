@@ -1,7 +1,10 @@
 ﻿using Biker.Web.Data;
 using Biker.Web.Data.Entities;
 using Biker.Web.Data.Entities.MotorBike;
+using Biker.Web.Data.Entities.Provider;
 using Biker.Web.Models.MotorBike;
+using Biker.Web.Models.Provider;
+using Biker.Web.Models.Spare;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq;
@@ -116,6 +119,36 @@ namespace Biker.Web.Helpers
                 ImageUrl = model.ImageUrl,
                 Name = model.Name
                 
+            };
+        }
+
+        public SpareBrandEntity ToSpareBrandEntity(AddSpareBrandViewModel model, string path)
+        {
+            return new SpareBrandEntity
+            {
+                Id = model.Id,
+                Name = model.Name,
+                ImageUrl = path
+            };
+        }
+
+        public SpareCategoryEntity ToSpareCategoryEntity(AddSpareCategoriesViewModel model, string path)
+        {
+            return new SpareCategoryEntity
+            {
+                Id = model.Id,
+                Name = model.Name,
+                ImageUrl = path
+            };
+        }
+
+        public ProviderEntity ToProviderEntity(AddProviderViewModel model, string path)
+        {
+            return new ProviderEntity
+            {
+                Id = model.Id,
+                Name = model.Name,
+                ImageUrl = path
             };
         }
 

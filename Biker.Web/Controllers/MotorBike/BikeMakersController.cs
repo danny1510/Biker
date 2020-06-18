@@ -149,7 +149,7 @@ namespace Biker.Web.Controllers.MotorBike
                 if (model.ImageFile != null)
                 {
                     path = await _imageHelper.UploadImageAsync(model.ImageFile, "Makers");
-                    //TODO: investigar
+                    //TODO: investigar borrar imagen anterior
                     _imageHelper.DeleteImageAsync(model.ImageUrl);
                 }
 

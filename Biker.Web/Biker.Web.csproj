@@ -12,8 +12,12 @@
 
   <ItemGroup>
     <Folder Include="Controllers\API\" />
+    <Folder Include="wwwroot\images\BikeTypes\" />
     <Folder Include="wwwroot\images\MotorBikesSpare\" />
     <Folder Include="wwwroot\images\Makers\" />
+    <Folder Include="wwwroot\images\Providers\" />
+    <Folder Include="wwwroot\images\SpareCategories\" />
+    <Folder Include="wwwroot\images\SpareBrands\" />
   </ItemGroup>
 
 </Project>

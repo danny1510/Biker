@@ -4,25 +4,25 @@
     ViewData["Title"] = "Motorbike Types ";
 }
 
-    <h2>MOTORBIKE TYPES <b>@Html.DisplayFor(model => model.Name)</b></h2>
+<h2>MOTORBIKE TYPES <b>@Html.DisplayFor(model => model.Name)</b></h2>
 
 <div>
     <table class="table">
- 
+
         <tbody>
             <tr>
                 <td>
                     @if (!string.IsNullOrEmpty(Model.ImageUrl))
                     {
-                        <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:300px;height:auto;max-width: 30%; height: auto;"  class="img-responsive img-thumbnail center-block"/>
+                        <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:300px;height:auto;max-width: 30%; height: auto;" class="img-responsive img-thumbnail center-block" />
                     }
                 </td>
         </tbody>
     </table>
 </div>
 <div>
-    <a asp-action="Index" class="btn btn-default">Back to List</a>
-    <a asp-action="AddType" class="btn btn-primary" asp-route-id="@Model.Id">Add Type</a>
+    <a asp-action="Index" class="btn btn-default"><i class="glyphicon glyphicon-chevron-left"></i>Back</a>
+    <a asp-action="AddType" class="btn btn-primary" asp-route-id="@Model.Id"><i class="glyphicon glyphicon-plus"></i>Add Type</a>
 </div>
 
 @if (Model.TypeMaker.Count == 0)
@@ -31,48 +31,64 @@
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.TypeMaker.FirstOrDefault().ImageUrl)
-
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TypeMaker.FirstOrDefault().BikeType.Name)
-                </th>
-
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.TypeMaker)
-            {
-                <tr>
-
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.ImageUrl))
-                        {
-                            <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:250px;height:auto;max-width: 100%; height: auto;" />
-                        }
-                    </td>
-
-                    <td>
-                        @Html.DisplayFor(modelItem => item.BikeType.Name)
-                    </td>
-
-                    <td>
-                        <a asp-action="EditType" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>
-                        @*<a asp-action="DetailsBikeSpare" class="btn btn-info" asp-route-id="@item.Id">Details</a>*@
-                        <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog">Delete</button>
-                    </td>
-                </tr>
-            }
 
 
 
-        </tbody>
-    </table>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+    <br />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title text-center"><b>MotorBike Types </b></h2>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-hover table-responsive table-striped" id="MyTable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.TypeMaker.FirstOrDefault().ImageUrl)
+
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.TypeMaker.FirstOrDefault().BikeType.Name)
+                                </th>
+
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.TypeMaker)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@Url.Content(item.ImageUrl)" alt="Image" style="width:150px;height:auto;max-width: 100%; height: auto;" />
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.BikeType.Name)
+                                    </td>
+
+                                    <td>
+                                        <a asp-action="EditType" class="btn btn-warning" asp-route-id="@item.Id"><i class="glyphicon-pencil"></i></a>
+                                        @*<a asp-action="DetailsBikeSpare" class="btn btn-info" asp-route-id="@item.Id">Details</a>*@
+                                        <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog"><i class="glyphicon glyphicon-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 <partial name="_DeleteDialog" />
@@ -80,8 +96,13 @@ else
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
+    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
+
+            $('#MyTable').DataTable();
+
             // Delete item
             var item_to_delete;
 

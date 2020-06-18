@@ -1,6 +1,7 @@
 ﻿using Biker.Web.Data.Entities;
 using Biker.Web.Data.Entities.Biker;
 using Biker.Web.Data.Entities.MotorBike;
+using Biker.Web.Data.Entities.MotorBike__Spare;
 using Biker.Web.Data.Entities.Provider;
 using Biker.Web.Data.Entities.Spare;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -31,10 +32,11 @@ namespace Biker.Web.Data
         public DbSet<SpareProviderEntity> SpareProviders { get; set; }
         public DbSet<ProviderEntity> Providers { get; set; }
         public DbSet<ProviderDetailsEntity> ProviderDetails { get; set; }
-
         public DbSet<SpareCategoryEntity> SpareCategories { get; set; }
         public DbSet<SpareBrandEntity> SpareBrands  { get; set; }
         public DbSet<BrandCategoryEntity> BrandCategories { get; set; }
+        public DbSet<TypeCategoryEntity> TypeCategories { get; set; }
+        
 
 
 

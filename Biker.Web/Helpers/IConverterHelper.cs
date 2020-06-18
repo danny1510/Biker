@@ -1,6 +1,9 @@
 ﻿using Biker.Web.Data.Entities;
 using Biker.Web.Data.Entities.MotorBike;
+using Biker.Web.Data.Entities.Provider;
 using Biker.Web.Models.MotorBike;
+using Biker.Web.Models.Provider;
+using Biker.Web.Models.Spare;
 using System.Threading.Tasks;
 
 namespace Biker.Web.Helpers
@@ -13,5 +16,8 @@ namespace Biker.Web.Helpers
         AddMotorBikeSpareViewModel ToMotorBikeSpareViewModel(MotorBikeSpareEntity model);
         BikeMakerEntity ToBikeMakerEntity(AddBikeMakerViewModel model, string path);
         AddBikeMakerViewModel ToBikeMakerViewModel(BikeMakerEntity model);
+        SpareBrandEntity ToSpareBrandEntity(AddSpareBrandViewModel model, string path);
+        SpareCategoryEntity ToSpareCategoryEntity(AddSpareCategoriesViewModel model, string path);
+        ProviderEntity ToProviderEntity(AddProviderViewModel model, string path);
     }
 }

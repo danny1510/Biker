@@ -175,6 +175,27 @@ namespace Biker.Web.Migrations
                     b.ToTable("SpareCategories");
                 });
 
+            modelBuilder.Entity("Biker.Web.Data.Entities.MotorBike__Spare.TypeCategoryEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("BikeTypeId");
+
+                    b.Property<string>("ImageUrl");
+
+                    b.Property<int?>("SpareCategoryId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BikeTypeId");
+
+                    b.HasIndex("SpareCategoryId");
+
+                    b.ToTable("TypeCategories");
+                });
+
             modelBuilder.Entity("Biker.Web.Data.Entities.MotorBikeSpareEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -577,6 +598,17 @@ namespace Biker.Web.Migrations
                     b.HasOne("Biker.Web.Data.Entities.MotorBike.MotorBikeEntity", "MotorBike")
                         .WithMany("MotorBikeSales")
                         .HasForeignKey("MotorBikeId");
+                });
+
+            modelBuilder.Entity("Biker.Web.Data.Entities.MotorBike__Spare.TypeCategoryEntity", b =>
+                {
+                    b.HasOne("Biker.Web.Data.Entities.BikeTypeEntity", "BikeType")
+                        .WithMany()
+                        .HasForeignKey("BikeTypeId");
+
+                    b.HasOne("Biker.Web.Data.Entities.MotorBike.SpareCategoryEntity", "SpareCategory")
+                        .WithMany()
+                        .HasForeignKey("SpareCategoryId");
                 });
 
             modelBuilder.Entity("Biker.Web.Data.Entities.MotorBikeSpareEntity", b =>

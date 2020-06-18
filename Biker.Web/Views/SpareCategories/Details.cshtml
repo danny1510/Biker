@@ -1,0 +1,110 @@
+﻿@model Biker.Web.Data.Entities.MotorBike.SpareCategoryEntity
+
+@{
+    ViewData["Title"] = $"Brands of {Model.Name}";
+}
+
+<h2>Brands of <b> @Html.DisplayFor(model => model.Name)</b> </h2>
+
+<div>
+    <table class="table">
+
+        <tbody>
+            <tr>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:300px;height:auto;max-width: 30%; height: auto;" class="img-responsive img-thumbnail center-block" />
+                    }
+                </td>
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-action="Index" class="btn btn-default"><i class="glyphicon glyphicon-chevron-left"></i>Back</a>
+    <a asp-action="AddBrand2" asp-route-id="@Model.Id" class="btn btn-primary"><i class="glyphicon glyphicon-pencil"></i>Edit Brands</a>
+</div>
+
+@if (Model.BrandCategories.Count == 0)
+{
+    <h4>Not Brands For @Html.DisplayFor(model => model.Name) added yet</h4>
+}
+else
+{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
+    <br />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title text-center"> Brands of <b> @Html.DisplayFor(model => model.Name)</b></h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-hover table-responsive table-striped" id="MyTable">
+                        <thead>
+                            <tr>
+
+                                <th class="col-lg-4">
+                                    @Html.DisplayNameFor(model => model.BrandCategories.FirstOrDefault().SpareBrand.Name)
+                                </th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.BrandCategories.FirstOrDefault().SpareBrand.ImageUrl)
+                                </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.BrandCategories)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SpareBrand.Name)
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.SpareBrand.ImageUrl))
+                                        {
+                                            <img src="@Url.Content(item.SpareBrand.ImageUrl)" alt="Image" style="width:100px;height:auto;max-width: 100%; height: auto;" />
+                                        }
+
+                                       @* <button data-id="@item.Id" class="btn btn-danger deleteItem" data-toggle="modal" data-target="#deleteDialog"><i class="glyphicon glyphicon-trash"></i></button>*@
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<partial name="_DeleteDialog" />
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#MyTable').DataTable();
+
+            // Delete item
+            var item_to_delete;
+
+            $('.deleteItem').click((e) => {
+                item_to_delete = e.currentTarget.dataset.id;
+            });
+
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/MotorBikes/Delete/' + item_to_delete;
+            });
+        });
+    </script>
+}
+
